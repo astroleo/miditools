@@ -1,0 +1,53 @@
+#
+# data reduction pipeline exclusion list
+#
+# for bad photometry data that fulfill selection criteria
+# give time of associated fringe track
+#
+# night      time       sourcename  comment
+2004-06-02 $ 07:58:04 $ Circinus    $ MACAO problems? Very low flux, no ozone absorption in B phot
+2008-03-17 $ 05:06:31 $ NGC3783     $ ozone in emission
+2008-04-16 $ 04:05:48 $ NGC5128     $ very weak B phot, ozone in emission
+2008-04-18 $ 02:54:31 $ NGC5128     $ phot actually GOOD, but nearest cal. phot bad
+2008-04-18 $ 03:14:48 $ HD...       $ cal. B photometry bad
+2008-04-19 $ 04:54:48 $ IC4329A     $ strange spectrum
+2008-04-19 $ 05:06:13 $ IC4329A     $ strange spectrum
+2008-04-20 $ 02:41:31 $ IC4329A     $ strange spectrum
+2008-04-20 $ 06:55:20 $ IC4329A     $ strange spectrum
+2009-03-12 $ 03:20:32 $ NGC3783     $ no signal
+2009-05-11 $ 23:33:00 $ NGC3783     $ very few counts (at decision threshold) in A longwards of 11 micron
+2009-12-02 $ 03:10:08 $ NGC1365     $ very shallow ozone feature in counts, strong ozone "emission" feature in flux, flux much too high
+2009-12-02 $ 06:09:30 $ NGC1365     $ ozone feature in emission in calibrated photometry; probably calibrator problem
+2010-01-02 $ 06:52:11 $ LEDA17155   $ B phot tilted w.r.t. cal (flux too high) (track is OK); also blurred (AO problems?)
+2010-01-30 $ 06:25:47 $ NGC3281     $ phot B blurred (MACAO problems?)
+2010-01-30 $ 08:33:50 $ NGC4507     $ very weak detection
+2010-01-30 $ 09:16:32 $ 3C273       $ ozone in emission
+2010-01-31 $ 03:38:05 $ MCG-5-23-16 $ bad overlap
+2010-01-31 $ 03:51:36 $ MCG-5-23-16 $ bad overlap
+2010-01-31 $ 05:36:11 $ Mrk1239     $ ozone in emission
+2010-02-27 $ 03:22:17 $ MCG-5-23-16 $ ozone in emission in resultant spectrum, may be recoverable with different background subtraction?
+2010-02-28 $ 03:22:38 $ ESO323-77   $ ozone in emission
+2010-03-02 $ 04:54:20 $ NGC4151     $ bad overlap
+2010-03-27 $ 00:20:09 $ MCG-5-23-16 $ ozone in emission
+2010-03-27 $ 00:31:38 $ MCG-5-23-16 $ ozone in emission
+2010-04-28 $ 02:06:16 $ MCG-5-23-16 $ almost no ozone feature in raw counts (channel B)
+2010-04-28 $ 08:09:21 $ IC4329A     $ ozone in absorption
+2010-05-29 $ 02:59:52 $ IC4329A     $ ozone in emission
+2010-08-26 $ 08:38:21 $ NGC1365     $ ozone in emission, ozone depth in A marginal
+2010-08-26 $ 07:47:31 $ NGC7469     $ mask problems (already in cal.), ozone in emission
+2010-08-28 $ 04:54:50 $ NGC7469     $ mask problems
+##
+## NGC1068
+2005-11-11 $ 01:19:25 $ NGC1068     $ 12 micron flux much too high / noisy (problem with cal!?)
+2005-11-11 $ 02:22:00 $ NGC1068     $ 12 micron flux much too high / noisy (problem with cal!?)
+2006-07-11 $ 09:06:49 $ NGC1068     $ 12 micron flux much too high / noisy
+2007-10-07 $ 06:08:04 $ NGC1068     $ 12 micron flux much too high / noisy (AT obs)
+2007-10-07 $ 07:10:28 $ NGC1068     $ 12 micron flux much too high / noisy (AT obs)
+2007-10-07 $ 08:13:45 $ NGC1068     $ 12 micron flux much too high / noisy (AT obs)
+2007-10-07 $ 08:56:48 $ NGC1068     $ 12 micron flux much too high / noisy (AT obs)
+2007-10-08 $ 05:21:25 $ NGC1068     $ 12 micron flux much too high / noisy (AT obs)
+2007-10-08 $ 06:20:58 $ NGC1068     $ 12 micron flux much too high / noisy (AT obs)
+2007-10-08 $ 07:19:22 $ NGC1068     $ 12 micron flux much too high / noisy (AT obs)
+2007-10-08 $ 09:05:35 $ NGC1068     $ 12 micron flux much too high / noisy (AT obs)
+## DUMMY SOURCE
+1900-00-00 $ 00:00:00 $ NoSource $ Oops, VLTI not yet built

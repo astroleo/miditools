@@ -1,0 +1,55 @@
+##
+## If names get longer than 14 characters, then
+## change read_sources in cal/mcc_match.pro!
+##
+## give coordinates in exactly this way:
+## RA: HH MM SS.S
+## DEC: +/-DEG AMIN ASEC (always give + or - sign)
+##
+## type         follows veron-cetty2006
+## dist         in Mpc (from NED)
+##
+## dist type:   (from NED)
+##              z: derived from redshift using reference frame 3K CMB, corrected for standard Lambda-CDM cosmology, angular-size distance
+##              i: redshift-independent distance measurement; where type=i, luminosity distance is assumed to equal angular-size distance
+##
+## ref          0: Jaffe+ 2004
+##              1: Meisenheimer+ 2007 (August)
+##              2: Tristram+ 2007 (November)
+##              3: Beckert+ 2008 (August)
+##              4: Kishimoto+ 2009 (Januar)
+##              5: Raban+ 2009 (April)
+##              6: Tristram+ 2009 (Juli)
+##              7: Burtscher+ 2009 (September)
+##              8: Burtscher+ 2010 (Oktober)
+##              9: Tristram & Schartmann 2011 (Juli)
+##             10: Kishimoto+ 2011 (Dezember)
+##             11: this work
+##
+##                                                                <-- from NED -->
+## id           RA             DEC         NED type  SIMBAD type   dist     dist    dist       notes                            name            Coude guide star   dist [arcsec]  Vmag    redshift    lum. distance    references
+##                                                                 mean     stddev  type
+IZwicky1     /  00 53 35.1  /  +12 41 34  / Sy 1    / Sy 1    /    222    /         / z  /                                    / I Zw 1       /    nucleus                / 0    / 14.1 /    0.0589   /   248 /     11
+NGC1068      /  02 42 40.7  /  -00 00 48  / Sy 1h   / Sy 2    /    14.4   /         / i  /   M77                              / NGC 1068     /    nucleus                / 0    / 12.0 /    0.003793 /    -1 /     0,5,11
+NGC1365      /  03 33 36.4  /  -36 08 25  / Sy 1.8  / Sy 1    /    18.1   /  2.6    / i  /   optical classification variable  / NGC 1365     /    nucleus                / 0    / 13.5 /    0.005457 /    -1 /     6,11
+LEDA17155    /  05 21 01.7  /  -25 21 45  / Sy 1h   / Sy 2    /    167    /         / z  /   IRAS 05189-2524                  / IRAS 05189-2524 /    nucleus                / 0    / 16.5 /    0.0426   /   181 /     11
+H0557-385    /  05 58 02.1  /  -38 20 04  / Sy 1.2  / Sy 1    /    135    /         / z  /                                    / H 0557-385   /    nucleus                / 0    / 14.0 /    0.033870 /  144 /      10
+IRAS09149-6206 / 09 16 09.4 /  -62 19 30  / Sy 1    / Sy 1    /    222    /         / z  /                                    / IRAS 09149-6206 / nucleus                / 0    / 12.5   / 0.057932  /  249   /    10
+MCG-5-23-16  /  09 47 40.2  /  -30 56 54  / Sy 1i   / Sy 2    /    38.8   /         / z  /                                    / MCG-05-23-16 /    2MASS	09473861-3057050 / 11   / 13.5 /  0.008486   /    39.5 /   6,9,11
+Mrk1239      /  09 52 19.1  /  -01 36 43  / NL Sy 1 / Sy 1    /    84.5   /         / z  /                                    / Mrk 1239     /    nucleus                / 0    / 14.4 /    0.0200   /    88.1 /   6,9,11
+NGC3227      /  10 23 30.6  /  +19 51 54  / Sy 2    / Sy 2    /    20.2   /         / z  /   no successful track - only limit / NGC 3227     /    nucleus                / 0    / 11.8  /  0.003859  / 20.4    /   11
+NGC3281      /  10 31 52.1  /  -34 51 13  / Sy 2    / Sy 2    /    47.6   /         / z  /                                    / NGC 3281     /    2MASS	10315332-3451281 / 15   / 15.7 /  0.010674   /    48.7 /   11
+NGC3783      /  11 39 01.8  /  -37 44 19  / Sy 1.5  / Sy 1    /    43.8   /         / z  /                                    / NGC 3783     /    nucleus                / 0    / 12.5  / 0.009730   /  44.7   /   3,4,10
+NGC4151      /  12 10 32.6  /  +39 24 21  / Sy 1.5  / Sy 1    /    16.9   /         / z  /                                    / NGC 4151     /    nucleus                / 0    / 12.3 /    0.003319 /   17.1 /    7,9,10
+3C273        /  12 29 06.7  /  +02 03 08  / Sy 1.0  / Quasar  /    546    /         / z  /                                    / 3C 273       /    nucleus                / 0    / 12.9 /    0.158   /   735 /      6,11
+NGC4507      /  12 35 36.6  /  -39 54 33  / Sy 1h   / Sy 2    /    51.7   /         / z  /                                    / NGC 4507     /    2MASS	12353959-3954059 / 28   / 16.0 /    0.011801  /  53 /      6,11
+NGC4593      /  12 39 39.4  /  -05 20 39  / Sy 1.0  / Sy 1    /    41.2   /         / z  /                                    / NGC 4593     /    nucleus                / 0    / 13.9 /    0.009000 /    42.0 /   11
+IC3639       /  12 40 52.8  /  -36 45 21  / Sy 1h   / Sy 2    /    48.3   /         / z  /   no successful track - only limit / IC 3639      /    2MASS 12405050-3645458 / 37   / 14.0 / 0.010924    /  49.5   /   11
+ESO323-77    /  13 06 26.1  /  -40 24 52  / Sy 1.2  / Sy 1    /    64.2   /         / z  /                                    / ESO 323-77   /    nucleus                / 0    / 12.5  / 0.015014    /  66.3   /  10
+NGC5128      /  13 25 26.6  /  -43 01 09  / Sy 2    / Sy 2    /    3.8    /  0.08   / i  /                                    / Centaurus A  /    2MASS 13252384-4300537 / 45   / 12.1   / 0.001825     /  -1   /  1,8
+IRAS13349+2438 / 13 37 18.7  /  +24 23 03 / NL Sy 1 / Sy 1    /    393    /         / z  /                                    / IRAS 13349+2438 / nucleus                / 0    / 14.5   / 0.107641    /  483   /  10
+IC4329A      /  13 49 19.3  /  -30 18 34  / Sy 1.2  / Sy 1    /    68.3   /         / z  /                                    / IC 4329 A    /    nucleus                / 0    / 12.9 /    0.016054   /    70.6 / 6,9,11
+Circinus     /  14 13 09.9  /  -65 20 21  / Sy 1h   / Sy 2    /    4.205  /  0.007  / i  /                                    / Circinus     /    2MASS 14131786-6520182 / 50   / 12.5 /    0.001448   /    -1 /   2
+NGC5506      /  14 13 15.0  /  -03 12 27  / Sy 1i   / Sy 2    /    28.7   /         / z  /                                    / NGC 5506     /    nucleus                / 0    / 12.4 /    0.006181   /    29.1 / 6,11
+NGC5995      /  15 48 25.0  /  -13 45 28  / Sy 1.9  / Sy 2    /    102    /         / z  /                                    / NGC 5995     /    nucleus                / 26   / 12.4 /    0.025194   /    108 /  11
+NGC7469      /  23 03 15.6  /  +08 52 26  / Sy 1    / Sy 1    /    60.9   /         / z  /                                    / NGC 7469     /    nucleus                / 0    / 13.3 /    0.016317   /    62.7 / 6,11

@@ -1,0 +1,16 @@
+# Source: http://www.eso.org/observing/etc/doc/vlti/baseline/baselinedata.txt
+#
+#   Longitude: -70.40479659 degrees
+#    Latitude: -24.62794830 degrees
+#
+# This list holds baseline lengths in meters, and position angles in degrees
+# East of North (so they are *not* the "platform coordinates" (p,q), but
+# already the much more useful E-W coordinates!
+#
+# name ; B[m]     ; PA [deg]
+U1U2  ;   56.569  ;   26.016    ;    0.
+U1U3  ;  102.434  ;   32.369    ;    0.
+U1U4  ;  130.231  ;   60.396    ;    0.
+U2U3  ;   46.635  ;   40.082    ;    0.
+U2U4  ;   89.443  ;   81.321    ;    0.
+U3U4  ;   62.463  ;  110.803    ;    0.
