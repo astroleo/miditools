@@ -1,0 +1,14 @@
+#
+# data reduction pipeline *IN*clusion list
+#
+# for (marginally) good photometry data that are flagged by selection criteria
+#
+# night      time       sourcename  comment
+2009-05-04 $ 05:50:15 $ 3C273     $ the best we have for this source
+2009-05-09 $ 23:33:33 $ H0557-385 $ acceptable phot, B channel just below threshold for automatic flagger
+2010-03-26 $ 07:21:05 $ NGC4593   $ the best we have for this source
+2010-03-26 $ 07:32:34 $ NGC4593   $ the best we have for this source
+2010-03-27 $ 05:00:11 $ NGC5995   $ the best and only we have for this source
+2010-08-25 $ 09:45:29 $ LEDA17155 $ marginal photometry (very low counts), but spectrum etc. look good
+## DUMMY SOURCE
+1900-00-00 $ 00:00:00 $ NoSource $ Oops, VLTI not yet built

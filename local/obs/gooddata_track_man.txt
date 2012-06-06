@@ -1,0 +1,9 @@
+#
+# data reduction pipeline *IN*clusion list
+#
+# for (marginally) good fringe track data that are flagged by selection criteria
+#
+# night      time       sourcename  comment
+2011-04-19 $ 03:56:25 $ NGC4593  $ ozone feature slightly too shallow, otherwise OK but very weak
+## DUMMY SOURCE
+1900-00-00 $ 00:00:00 $ NoSource $ Oops, VLTI not yet built

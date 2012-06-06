@@ -1,0 +1,61 @@
+# add tracks with < 100 good frames (only cost time)!
+#
+# data reduction pipeline exclusion list
+#
+# for bad data that fulfill selection criteria or cause the pipeline to crash
+#
+# night      time       sourcename  comment
+2004-06-02 $ 01:58:59 $ HD102461    $ only 400 frames, no good frame (probably only beginning of track with opd offset by several millimeters); causes pipeline to crash
+2005-04-17 $ 03:29:53 $ Circinus    $ bad track, few good frames, no 8 micron flux
+2005-05-30 $ 03:01:16 $ NGC3783     $ very strange spectrum
+2005-05-30 $ 03:21:59 $ NGC3783     $ very strange spectrum
+2005-05-30 $ 09:47:14 $ HD157236    $ very low gain (outlier in otherwise stable night)
+2006-09-10 $ 06:09:20 $ NGC 7469    $ very few counts, possibly because of clouds
+2006-09-10 $ 07:00:40 $ HD26967     $ probably affected by clouds
+2006-09-10 $ 07:42:55 $ NGC1365     $ possibly affected by clouds
+2008-04-20 $ 00:17:30 $ HD71250     $ extremely low gain, irrelevant for statistic
+2008-04-20 $ 03:41:10 $ HD95272     $ low gain, irrelevant for statistic
+2008-04-20 $ 05:06:28 $ HD98292     $ very low gain, irrelevant for statistic
+2008-04-25 $ 04:04:36 $ Circinus    $ very low signal
+2009-04-14 $ 04:12:55 $ HD120404    $ no good frames; causes pipeline to crash
+2009-04-26 $ 09:08:26 $ Circinus    $ no signal
+2009-04-26 $ 09:23:20 $ Circinus    $ no signal
+2009-05-04 $ 05:50:15 $ 3C273       $ no gain statistics available!
+2009-12-02 $ 03:34:12 $ NGC1365     $ uncalibratable: nearest cal too far away
+2010-02-27 $ 05:01:50 $ MCG-5-23-16 $ marginal detection, nothing to combine with, clouds?
+2010-02-27 $ 05:34:12 $ HD116870    $ excessive seeing, very low gain
+2010-02-27 $ 06:01:17 $ HD90610     $ excessive seeing, very low gain
+2010-03-27 $ 02:00:28 $ HD112213    $ blue gain almost 2x lower than 17 min. later on same cal; probably something went wrong, log gives no clues
+2010-04-28 $ 02:06:16 $ MCG-5-23-16 $ clouds?
+2010-04-28 $ 02:34:31 $ HD82150     $ clouds
+2010-05-29 $ 23:21:25 $ NGC5506     $ no signal
+2010-05-29 $ 23:25:09 $ NGC5506     $ no signal
+2010-05-29 $ 02:59:52 $ IC4329A     $ seeing > 2"
+2010-05-29 $ 04:04:28 $ IC4329A     $ seeing > 2"
+2010-05-29 $ 04:08:07 $ IC4329A     $ seeing > 2"
+2010-05-29 $ 04:11:43 $ IC4329A     $ seeing > 2"
+2010-05-29 $ 04:15:15 $ IC4329A     $ seeing > 2"
+2010-05-29 $ 04:59:26 $ IC4329A     $ seeing > 2"
+2010-05-29 $ 05:02:57 $ IC4329A     $ seeing > 2"
+2010-05-29 $ 05:07:37 $ IC4329A     $ seeing > 2"
+2010-05-29 $ 05:19:33 $ IC4329A     $ seeing > 2"
+# 2010-05-29 $ 05:02:57 $ IC4329A     $ FT very bad, very low flux
+2010-05-31 $ 02:28:29 $ HD90610     $ very strong wind, very low gain
+2010-05-31 $ 03:01:26 $ HD97576     $ calibrator template corrupt
+2010-05-31 $ 09:11:56 $ HD198700    $ irrelevant observation
+2010-05-31 $ 09:52:59 $ HD198700    $ irrelevant observation
+2010-08-24 $ 04:10:05 $ HD167618    $ very low gain, unknown cause
+2010-08-24 $ 08:35:12 $ IZwicky1    $ too little flux to be useful as a single track and no track to combine with
+2010-08-29 $ 08:29:07 $ HD220009    $ Konrad: only part of detector window was read out; causes pipeline to crash
+2011-04-14 $ 01:24:57 $ HD123123    $ outlier in terms of gain in otherwise very stable night
+2011-04-14 $ 02:01:51 $ NGC 5506    $ strange spectrum, very low flux; possibly connected to outlier cal 35 min. before
+2011-04-20 $ 07:36:13 $ HD126927    $ Track started, then UT4 opened lock, oirAverageVisImage for mask creation fails, midiMakeMask crashes; causes pipeline to crash
+2011-08-17 $ 05:10:51 $ HD157236    $ very low gain (reason unknown; not necessarily airmass -- other high airmass calibrators in this night have normal gains)
+2011-08-18 $ 04:05:48 $ NGC7469     $ clouds
+2011-08-18 $ 04:13:59 $ NGC7469     $ clouds
+2011-08-18 $ 04:16:16 $ NGC7469     $ clouds
+2011-08-18 $ 04:22:05 $ NGC7469     $ clouds
+2011-08-18 $ 04:48:05 $ NGC7469     $ clouds
+#### 2011-04-17   s4   # Circinus     crashes --- should put it in pipeline_exclusions files
+## DUMMY SOURCE
+1900-00-00 $ 00:00:00 $ NoSource    $ IDL wants it so
