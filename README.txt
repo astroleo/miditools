@@ -3,6 +3,10 @@ MIDI LP pipeline by Leonard Burtscher, burtscher@mpe.mpg.de
 6 June 2012
 ===
 
+--- Requirements ---
+- EWS 2.0 beta1 or later; EWS can be obtained from http://home.strw.leidenuniv.nl/~jaffe/ews/index.html
+- For plotting, the Coyote Graphics System is required (http://www.idlcoyote.com/graphics_tips/coyote_graphics.php)
+
 --- Installation ---
 This pipeline needs to know about three directories: itself, raw data, reduced data
 
@@ -28,9 +32,13 @@ interested in different targets.
 --- Features ---
 - To reduce an observation call dr/lpw (see instructions there)
 - To check the quality of an observation, run qc/obs_good (see instructions there)
+- Produce a quality control plot for a fringe track or photometry observation using QC_track or QC_phot
 
+--- Bug reports ---
+These scripts have not been tested on any machine except mine, some dependencies might not
+be resolved. Please contact me if you encounter any bugs or strange behaviour. Thanks!
 
-To come:
+--- To come ---
 - scripts to produce your own obs_db.sav
 - scripts to reduce all observations of a target
 - scripts to do simple fitting
