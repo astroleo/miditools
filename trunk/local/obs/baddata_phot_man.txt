@@ -49,5 +49,9 @@
 2007-10-08 $ 06:20:58 $ NGC1068     $ 12 micron flux much too high / noisy (AT obs)
 2007-10-08 $ 07:19:22 $ NGC1068     $ 12 micron flux much too high / noisy (AT obs)
 2007-10-08 $ 09:05:35 $ NGC1068     $ 12 micron flux much too high / noisy (AT obs)
+##
+## NGC 424
+2009-08-01 $ 06:43:27 $ NGC424      $ very low counts, calibrated spec too low
+2009-08-04 $ 05:33:06 $ NGC424      $ ozone in emission in calibrated spec
 ## DUMMY SOURCE
 1900-00-00 $ 00:00:00 $ NoSource $ Oops, VLTI not yet built
