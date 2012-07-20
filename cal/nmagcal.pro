@@ -1,3 +1,4 @@
+@$MIDITOOLS/mcc_match/mcc_match
 function RJflux, F10_jy, lam_mu
 	return, F10_jy * 10^2 * lam_mu^(-2.)
 end
@@ -41,4 +42,40 @@ function NMagCal, name=name, f=f, calspec=calspec, pl=pl
 	;; 9 micron flux
 	if keyword_set(pl) then print, '9 micron flux: ' + strtrim(total(calspec[115:118])/4,2)
 	return, p
+end
+
+;; BELOW: OLD VERSION OF THIS
+; prompt for calibrator name, look in Roy's catalog files, give the N band flux of that star
+; and diameter and plot the spectrum
+;
+; save interpolated calibrator spectrum in calspec
+;
+pro NMagCalOLD, calspec
+
+cal=''
+read, 'Enter name of cal (e.g. HD119193, no spaces or leading zeros): ', cal
+
+restore, '$MIDITOOLS/local/cal/midi_cohen_merged.dat'
+ix=where(calcat.name eq cal)
+
+if ix eq -1 then begin
+	restore, '$MIDITOOLS/local/cal/cohen_cat.dat'
+	ix=where(calcat.name eq cal)
+	if ix eq -1 then begin
+		restore, '$MIDITOOLS/local/cal/visir_cat.dat'
+		ix=where(calcat.name eq cal)
+		if ix eq -1 then begin
+			print, 'This calibrator is unknown in the MIDI, Cohen and VISIR calibrator catalogs.'
+			stop
+		endif
+	endif
+endif
+	print, 'The 10 micron flux of ' + cal + ' is: ' + strtrim(calcat[ix].F10,2) + '.'
+	print, 'The diameter of ' + cal + ' is: (' + strtrim(calcat[ix].diam.theta,2) + ' +/- ' + strtrim(calcat[ix].diam.err,2) + ') mas' + '.'
+	
+	correction=calcat[ix].spec.fnu / RJflux(calcat[ix].f10,calcat[ix].spec.lam)
+
+	plot, calcat[ix].spec.lam, correction, title=cal, xtitle='lambda/mu', ytitle='correction factor', xrange=[8.0,13.0],xstyle=1
+        restore, '$MIDITOOLS/local/MIDI/w.sav'
+        calspec = interpol(calcat[ix].spec.fnu,calcat[ix].spec.lam,w)
 end

@@ -25,11 +25,13 @@
 ##              9: Tristram & Schartmann 2011 (Juli)
 ##             10: Kishimoto+ 2011 (Dezember)
 ##             11: this work
+##             12: Hšnig+ 2012
 ##
 ##                                                                <-- from NED -->
 ## id           RA             DEC         NED type  SIMBAD type   dist     dist    dist       notes                            name            Coude guide star   dist [arcsec]  Vmag    redshift    lum. distance    references
 ##                                                                 mean     stddev  type
 IZwicky1     /  00 53 35.1  /  +12 41 34  / Sy 1    / Sy 1    /    222    /         / z  /                                    / I Zw 1       /    nucleus                / 0    / 14.1 /    0.0589   /   248 /     11
+NGC424       /  01 11 27.6  /  -38 05 00  / Sy 1h   / Sy 2    /    44.7   /         / z  /                                    / NGC 424      /    nucleus                / 0    / 12.0 /   0.011018  /   45.7  /   12
 NGC1068      /  02 42 40.7  /  -00 00 48  / Sy 1h   / Sy 2    /    14.4   /         / i  /   M77                              / NGC 1068     /    nucleus                / 0    / 12.0 /    0.003793 /    -1 /     0,5,11
 NGC1365      /  03 33 36.4  /  -36 08 25  / Sy 1.8  / Sy 1    /    18.1   /  2.6    / i  /   optical classification variable  / NGC 1365     /    nucleus                / 0    / 13.5 /    0.005457 /    -1 /     6,11
 LEDA17155    /  05 21 01.7  /  -25 21 45  / Sy 1h   / Sy 2    /    167    /         / z  /   IRAS 05189-2524                  / IRAS 05189-2524 /    nucleus                / 0    / 16.5 /    0.0426   /   181 /     11
