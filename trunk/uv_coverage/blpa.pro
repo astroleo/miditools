@@ -3,7 +3,7 @@
 ; RA, DEC and returns baseline and position angle for that observation.
 ;
 function blpa, xyz, lst, ra, dec
-; with code from Roy
+; with code from Roy van Boekel
    x1 = xyz[0].x
    y1 = xyz[0].y
    z1 = xyz[0].z

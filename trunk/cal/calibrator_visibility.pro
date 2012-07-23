@@ -5,7 +5,7 @@
 ;;        BL [m]
 ;;        diameter [mas]
 ;;
-;; with code from Roy
+;; with code from Roy van Boekel
 ;;
 function calibrator_visibility,lambda,diameter,BL
 	xx=dblarr(n_elements(lambda))
