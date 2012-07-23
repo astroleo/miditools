@@ -1,5 +1,41 @@
 ;
-; match with mcc (originally from Roy) -- modified to also recognize science sources
+; extend structure (from Roy van Boekel)
+;
+function extend_structure,input,fieldname,fieldvalue
+  ;; first make a new "copy" of the structure input
+  names=tag_names(input)
+  for i=0,n_elements(names)-1 do begin
+    command='x=input[0].'+string(names[i])
+    dummy=execute(command)
+    name=string(names[i])
+    value=x
+    if (i eq 0) then one=create_struct(name,value) $
+    else one=create_struct(one,name,value)
+  endfor
+  ;; generate the desired field to be added
+  if (n_elements(fieldvalue) eq 1) then $
+    one=create_struct(one,fieldname,fieldvalue[0]) else $
+      one=create_struct(one,fieldname,fieldvalue)
+
+  n=n_elements(input)
+  output=replicate(one,n)
+
+  if (n gt 1) then begin
+    for j=1,n-1 do begin
+      for i=0,n_elements(names)-1 do begin
+        ;; copy the rest of the old values
+        command='output[j].'+string(names[i])+'=input[j].'+string(names[i])
+        dummy=execute(command)
+      endfor
+    ;; now put in the rest of the values
+    command='output[j].'+fieldname+'=input[j].'+fieldname
+    endfor
+  endif
+
+  return,output
+end
+;
+; match with mcc (originally from Roy van Boekel) -- modified to also recognize science sources
 ;
 function match_with_mcc,RA,DEC
 ;match_radius_cal  = 10.        ;; matching radius for calibrators
