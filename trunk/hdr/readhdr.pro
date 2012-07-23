@@ -1,4 +1,3 @@
-@$MIDITOOLS/mcc_match/mcc_match
 ;;
 ;; READHDR
 ;; 
