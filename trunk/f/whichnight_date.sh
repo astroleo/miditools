@@ -9,11 +9,6 @@
 ##
 ## returns day of night begin as YYYY-MM-DD
 ##
-## LIMITATIONS
-## uses Mac OS X version of date command, not identical to GNU date. The latter
-## does not understand the -v option (but has -d instead).
-## 
-##
 ############ DEFINITIONS ############
 ## Define beginning of night
 ## set night begin = 14:00 UT (= 11:00 / 9:00 local time)
@@ -39,9 +34,17 @@ month=`echo $month | sed 's/^0//'`
 ##
 ## find out which night this file belongs to
 ## check: are we at first day of month?
-if [[ $hour -lt $nightbegin ]]
+arc=`uname`
+if [ $hour -lt $nightbegin ]
 then
-	date -v${year}y -v${month}m -v${day}d -v-1d "+%Y-%m-%d"
+	if [ $arc = "Darwin" ]
+	then
+		## use BSD date syntax
+		date -v${year}y -v${month}m -v${day}d -v-1d "+%Y-%m-%d"
+	else
+		## use GNU date syntax
+		date --date="${year}-${month}-${day} -1 day" "+%Y-%m-%d"
+	fi
 else
 	printf "%4d-%02d-%02d\n" $year $month $day
 fi
