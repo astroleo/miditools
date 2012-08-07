@@ -1,3 +1,4 @@
+@$MIDITOOLS/qc/o3.pro
 ;; FUNCTION OBS_GOOD
 ;;
 ;; PURPOSE:
