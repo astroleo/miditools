@@ -1,4 +1,3 @@
-@$IDLTOOLS/plot/lplot
 @$MIDITOOLS/qc/o3
 @$MIDITOOLS/dr/tools
 @$MIDITOOLS/qc/gain
