@@ -13,7 +13,6 @@ for FILENAME in $filelist; do
 	dpwv=`echo $LINE | awk -F " " '{print $4}'`
 	ins=`echo $LINE | awk -F " " '{print $6}'`
 	echo $day " " $pwv " " $dpwv " " $ins >> pwv.dat
-#	done < 2005.txt
 	done < $FILENAME
 	echo "Done with " $FILENAME
 done
