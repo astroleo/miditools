@@ -1,4 +1,4 @@
-@$MIDITOOLS/mcc_match/mcc_match
+@$MIDITOOLS/cal/mcc_match
 @$MIDITOOLS/qc/obs_good
 ;;
 ;; FUNCTION GAIN
@@ -44,9 +44,9 @@ function gain, night, caltime, reddir=reddir, nophot=nophot
 		ix_cal = where(db.day eq night and db.time eq caltime)
 		ra = db[ix_cal].ra
 		dec = db[ix_cal].dec
-		cd, '$MIDITOOLS/mcc_match', current=current
+;		cd, '$MIDITOOLS/mcc_match', current=current
 		p = match_with_mcc(ra,dec)
-		cd, current
+;		cd, current
 		calspec = interpol(p.specfnu,p.speclam,w)
 		;;
 		;; correct for visibility of cal
