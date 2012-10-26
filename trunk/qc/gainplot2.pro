@@ -1,3 +1,4 @@
+@$MIDITOOLS/var/lplot
 @$MIDITOOLS/qc/o3
 @$MIDITOOLS/dr/tools
 @$MIDITOOLS/qc/gain
@@ -31,8 +32,11 @@ function datetime2ix, nights, times
 end
 
 ; currently only for correlated fluxes
+;;
+;; ATs: set keyword if observing nights was with ATs
+;;
 
-pro gainplot, gainfile=gainfile, night, outdir=outdir
+pro gainplot, gainfile=gainfile, night, outdir=outdir, ATs=ATs
 	restore, '$MIDITOOLS/local/obs/obs_db.sav'
 	if not keyword_set(gainfile) then gainfile = '$MIDITOOLS/local/obs/gains.sav'
 	restore, gainfile
@@ -43,23 +47,24 @@ pro gainplot, gainfile=gainfile, night, outdir=outdir
 	if ix_all[0] eq -1 then begin
 		lprint, 'Nothing to plot for ' + night
 	endif else begin
-		if not keyword_set(outdir) then dirname='/Users/astro/Desktop' else dirname = outdir
+		if not keyword_set(outdir) then dirname='$MIDILOCAL/obs/gainplots' else dirname = outdir
 		if not file_test(dirname) then spawn, 'mkdir ' + dirname
 	
-;		ps_start, filename=dirname+'/'+night+'.ps'
+		ps_start, filename=dirname+'/'+night+'.ps'
 			corrsym = 4
 			badcorrsym = 7
 	
 			; (1) gains + tau_0
-			maxgain = 2000
+			if keyword_set(ATs) then maxgain = 180 else maxgain = 2000
 	
-			cgplot, indgen(100), indgen(100), xr=[0,12], yr=[0,maxgain], xstyle=1, ystyle=1, ytitle='Conversion factor [counts/(Jy s px)]', /nodata, charsize=1.5, xtitle='Hours since midnight UT'
+			cgplot, indgen(100), indgen(100), xr=[0,12], yr=[0,maxgain], xstyle=1, ystyle=9, ytitle='Conversion factor [counts/(Jy s px)]', /nodata, charsize=1.5, xtitle='Hours since midnight UT'
 			
 			maxam = 2.5
 			gain_am_factor = maxgain/maxam
 
 			yticklabels = [1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5]
-			ytickv = yticklabels*gain_am_factor
+			airmoffset = 0.7
+			ytickv = (yticklabels - airmoffset) *gain_am_factor
 			ytickname = ['1.00','1.25','1.50','1.75','2.00','2.25', '2.50']
 			cgaxis, yaxis=3, ystyle=1, ytickv=ytickv, ytickname=ytickname, yticks=n_elements(ytickv), ytitle = 'Airmass', charsize=1.5
 
@@ -71,22 +76,32 @@ pro gainplot, gainfile=gainfile, night, outdir=outdir
 			
 			; plot airmass
 			dbix = datetime2ix(gains[ix_good].night, gains[ix_good].time)
-			cgplots, gains[ix_good].hh, db[dbix].airm * gain_am_factor, psym=2
+			cgplots, gains[ix_good].hh, (db[dbix].airm-airmoffset) * gain_am_factor, psym=2
 				
 			;; read in obs_good, overplot science observations
 			ix_night = where(db.day eq night and db.catg eq 'SCIENCE' and db.dpr eq 'FT')
-			plotsym, 2
+			plotsym, 3
 			if ix_night[0] ne -1 then begin
 				for i=0, n_elements(ix_night)-1 do begin
 					hh = hhmmss(db[ix_night[i]].time)
 					obs_good = obs_good(night, db[ix_night[i]].time)
-					cgplots, hh, 250, psym=8, symsize=1.5
+					cgplots, hh, maxgain*0.9, psym=8, symsize=1
 				endfor
 			endif
 			
-			cgtext, 11.5, 1800, night, align=1., charsize=1.5
+			cgtext, 11.5, 1.8/2 * maxgain, night, align=1., charsize=1.5
+			
+			; statistics
+			if ix_good[0] ne -1 then begin
+				gainstat_old, night, gainfile=gainfile, stat=stat
+				xyouts, 1, -30, 'lambda        avg gain    gain rms   rms/avg'
+				xyouts, 1, -40, string('8.5+/-0.2   ', stat.avg_8_5_2, stat.rms_8_5_2, 100*stat.rms_8_5_2/stat.avg_8_5_2, ' %', format = '(A13, f9.2, f9.2, f8.2, A2)'), color=5
+				xyouts, 1, -50, string('10.5+/-0.2   ', stat.avg_10_5_2, stat.rms_10_5_2, 100*stat.rms_10_5_2/stat.avg_10_5_2, ' %', format = '(A13, f9.2, f9.2, f8.2, A2)'), color=4
+				xyouts, 1, -60, string('12.5+/-0.2   ', stat.avg_12_5_2, stat.rms_12_5_2, 100*stat.rms_12_5_2/stat.avg_12_5_2, ' %', format = '(A13, f9.2, f9.2, f8.2, A2)'), color=3
+			endif
+
 	
-;	ps_end
+	ps_end
 	endelse
 end
 

@@ -1,4 +1,4 @@
-@$MIDITOOLS/mcc_match/mcc_match
+@$MIDITOOLS/cal/mcc_match
 function RJflux, F10_jy, lam_mu
 	return, F10_jy * 10^2 * lam_mu^(-2.)
 end

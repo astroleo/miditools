@@ -22,7 +22,8 @@ PRO midiMakeMask_exist, base, initialMask=initialMask,$
       print,'   Measuring shift from input mask to fringe image'
 ;            get data from disk and find which images we want from struct
 
-	if not file_test(initialMask) and file_test(base+'.fringeimages.fits') then stop
+	if not file_test(initialMask) then stop
+	if not file_test(base+'.fringeimages.fits') then stop
 	
       oldMask    = oirGetData(initialMask)
       fringeMask = oirGetData(base+'.fringeimages.fits')

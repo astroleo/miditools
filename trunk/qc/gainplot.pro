@@ -1,3 +1,4 @@
+@$MIDITOOLS/var/lplot
 @$MIDITOOLS/qc/o3
 @$MIDITOOLS/dr/tools
 @$MIDITOOLS/qc/gain
@@ -45,9 +46,12 @@ pro gainplot, gainfile=gainfile, night, outdir=outdir
 	
 			dimm = read_dimm(night)
 			; get smoothed values
-			tau0 = ambismooth(dimm.t_UT, dimm.tau0, 10)
-			seeing = ambismooth(dimm.t_UT, dimm.seeing, 10)
-			flux_rms = ambismooth(dimm.t_UT, dimm.flux_rms, 10)
+			if dimm.tau0[0] ne -1 and dimm.seeing[0] ne -1 and dimm.flux_rms[0] ne -1 then begin
+				tau0 = ambismooth(dimm.t_UT, dimm.tau0, 10)
+				seeing = ambismooth(dimm.t_UT, dimm.seeing, 10)
+				flux_rms = ambismooth(dimm.t_UT, dimm.flux_rms, 10)
+				plotambi=1
+			endif else plotambi=0
 	
 			; (1) gains + tau_0
 			maxgain = 3000
@@ -72,7 +76,8 @@ pro gainplot, gainfile=gainfile, night, outdir=outdir
 				plots, gains[ix_bad].hh, gains[ix_bad].gain12_5_2, psym=badcorrsym, color=3
 			endif
 	
-			oplot, tau0.t_UT, tau0.ambi * gain_tau0_factor, psym=3
+			if plotambi then $
+				oplot, tau0.t_UT, tau0.ambi * gain_tau0_factor, psym=3
 ;			xyouts, gains[ix_all].hh, 100+gains[ix_all].gain8_5_2, gains[ix_all].time, charsize=0.7, alignment=0.5, orientation=90
 			xyouts, 5, 3500, night, alignment=0.5
 			
@@ -110,7 +115,8 @@ pro gainplot, gainfile=gainfile, night, outdir=outdir
 
 			
 			; (2) clouds
-			plot, flux_rms.t_UT, flux_rms.ambi, psym=3, xr=[-2, 12], yr=[0,0.05], xstyle=1, ystyle=9, ytitle='DIMM flux rms', charsize=1.5
+			if plotambi then $
+				plot, flux_rms.t_UT, flux_rms.ambi, psym=3, xr=[-2, 12], yr=[0,0.05], xstyle=1, ystyle=9, ytitle='DIMM flux rms', charsize=1.5
 			yticklabels = [0, 45, 90, 135, 180]
 			cloud_dist_factor = 0.05/180
 			ytickv = yticklabels*cloud_dist_factor
@@ -119,20 +125,22 @@ pro gainplot, gainfile=gainfile, night, outdir=outdir
 
 			;;
 			;; print DIMM-VLTI pointing difference in degree for each observation
-			for i=0, n_elements(ix_all)-1 do begin
-				dv_diff=dimm_pointing_diff(night,gains[ix_all[i]].time)
-				if dv_diff ne -1 then begin
-					if n_elements(dimm_vlti_diff) eq 0 then begin
-						dimm_vlti_diff = dv_diff
-						t_ut = gains[ix_all[i]].hh
-					endif else begin
-						dimm_vlti_diff = [dimm_vlti_diff,dv_diff]
-						t_ut = [t_ut, gains[ix_all[i]].hh]
-					endelse
-				endif
-			endfor
-			if n_elements(t_ut) eq 1 then plots, t_ut, dimm_vlti_diff*cloud_dist_factor else $
-				oplot, t_ut, dimm_vlti_diff*cloud_dist_factor, psym=1
+			if plotambi then begin
+				for i=0, n_elements(ix_all)-1 do begin
+					dv_diff=dimm_pointing_diff(night,gains[ix_all[i]].time)
+					if dv_diff ne -1 then begin
+						if n_elements(dimm_vlti_diff) eq 0 then begin
+							dimm_vlti_diff = dv_diff
+							t_ut = gains[ix_all[i]].hh
+						endif else begin
+							dimm_vlti_diff = [dimm_vlti_diff,dv_diff]
+							t_ut = [t_ut, gains[ix_all[i]].hh]
+						endelse
+					endif
+				endfor
+				if n_elements(t_ut) eq 1 then plots, t_ut, dimm_vlti_diff*cloud_dist_factor else $
+					oplot, t_ut, dimm_vlti_diff*cloud_dist_factor, psym=1
+			endif
 			
 			
 	;		plot, flux_rms.t_UT, flux_rms.ambi, psym=3, xr=[-2, 12], yr=[0,0.05], xstyle=1, ystyle=9, ytitle='DIMM flux rms', charsize=1.5
@@ -146,7 +154,8 @@ pro gainplot, gainfile=gainfile, night, outdir=outdir
 	
 	
 			; (3) seeing
-			plot, seeing.t_ut, seeing.ambi, psym=3, xr=[-2, 12], yr=[0,3], xstyle=1, ytitle='DIMM seeing [arcsec]', charsize=1.5
+			if plotambi then $
+				plot, seeing.t_ut, seeing.ambi, psym=3, xr=[-2, 12], yr=[0,3], xstyle=1, ytitle='DIMM seeing [arcsec]', charsize=1.5
 	
 			; oplot DIMM seeing from header
 			ix_seeing = where(db[ix_all_db].seeing gt 0)

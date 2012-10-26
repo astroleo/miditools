@@ -34,20 +34,20 @@ pro lpw, night, time, calonly=calonly, skipexcal=skipexcal, skipexsci=skipexsci
 	endif
 	if not keyword_set(calonly) then begin
 		if db[ix_sci].catg ne 'SCIENCE' then begin
-			lprint, night + ' / ' + time + ': Not a science observation!'
+			lprint, 'lpw: ' + night + ' / ' + time + ': ' + 'Not a science observation!'
 			goto, endofprogram
 		endif
 		time_sci=time
 		time_cal = closestcal(night, time_sci, /verbose, bestix=bestix)
 		if time_cal[0] eq '-1' then begin
-			lprint, 'No calibrator to reduce data with. Skipping this obs.'
+			lprint, 'lpw: ' + night + ' / ' + time + ': ' + 'No calibrator to reduce data with. Skipping this obs.'
 			goto, endofprogram
 		endif
 		scitag = maketag(night, time_sci)
 		scifiles = loadf(night, time_sci, /nophot)
 	endif else begin
 		if db[ix_sci].catg ne 'CALIB' then begin
-			lprint, 'Not a calibrator observations! Skipping this obs.'
+			lprint, 'lpw: ' + night + ' / ' + time + ': ' + 'Not a calibrator observations! Skipping this obs.'
 			goto, endofprogram
 		endif
 		time_cal=time
@@ -76,7 +76,7 @@ pro lpw, night, time, calonly=calonly, skipexcal=skipexcal, skipexsci=skipexsci
 		for i=0, n_elements(types)-1 do begin
 			if not file_test(caltag + types[i]) then goto, reducecal
 		endfor
-		lprint, 'Skipping calibrator reduction: all required files exist'
+		lprint, 'lpw: ' + night + ' / ' + time + ': ' + 'Skipping calibrator reduction: all required files exist'
 		goto, reducesci
 	endif
 
@@ -94,12 +94,12 @@ pro lpw, night, time, calonly=calonly, skipexcal=skipexcal, skipexsci=skipexsci
 	;; detect correct /dave setting (definition changed multiple times in midiUtilities; this reflect status of EWS 2.0-beta (2012Jan25))
 	;;
 	caltrack = midigetkeyword('DET NRTS MODE',calfiles[0])
-	if caltrack eq 'OBS_FRINGE_TRACK_DISPERSED_OFF' then begin
+	if caltrack eq 'OBS_FRINGE_TRACK_DISPERSED_OFF' or caltrack eq 'OBS_FRINGE_NOTRACK_DISPERSED' then begin
 		ave=0
 	endif else if caltrack eq 'OBS_FRINGE_TRACK_DISPERSED' then begin
 		ave=-1
 	endif else begin
-		lprint, 'mode not recognized: ' + caltrack
+		lprint, 'lpw: ' + night + ' / ' + time + ': ' + 'mode not recognized: ' + caltrack
 		goto, endofprogram
 	endelse
 	
@@ -111,7 +111,9 @@ pro lpw, night, time, calonly=calonly, skipexcal=skipexcal, skipexsci=skipexsci
 	;;
 	;; reduce calibrator fringe data
 	;;
-	faintvispipe, caltag, calfiles, mask=mask, smooth=sm, gsmooth=gsm, /two, ave=ave, minopd=minopd
+	midivispipe, caltag, calfiles, mask=mask, smooth=sm, gsmooth=gsm, /two, ave=ave, minopd=minopd, ierr=ierr
+	print, ierr
+	
 
 
 	;;
@@ -136,7 +138,7 @@ pro lpw, night, time, calonly=calonly, skipexcal=skipexcal, skipexsci=skipexsci
 		for i=0, n_elements(types)-1 do begin
 			if not file_test(scitag + types[i]) then goto, reducesci2
 		endfor
-		lprint, 'Skipping science reduction: all required files exist'
+		lprint, 'lpw: ' + night + ' / ' + time + ': ' + 'Skipping science reduction: all required files exist'
 				
 		goto, endofprogram
 	endif
@@ -146,16 +148,36 @@ pro lpw, night, time, calonly=calonly, skipexcal=skipexcal, skipexsci=skipexsci
 	;; reduce science fringe data
 	;;
 	; test if we need a shifted mask for the science data
-	mask_select, night, time_sci, mask=mask
-	faintvispipe, scitag, scifiles, mask=mask, smooth=sm, gsmooth=gsm, /two, ave=ave
+	if not file_test(scitag+'.fringeimages.fits') then forcecalmask=1
+	mask_select, night, time_sci, mask=mask, forcecalmask=forcecalmask
+
+	midivispipe, scitag, scifiles, mask=mask, smooth=sm, gsmooth=gsm, /two, ave=ave, ierr=ierr
+	if ierr ne 0 then lprint, 'lpw: ierr = ' + ierr
+	if ierr eq 12 then begin
+		corruptcorrfile = scitag + '.corr.fits'
+		spawn, 'rm ' + corruptcorrfile
+		lprint, 'lpw: Removed corrupt corr file ' + corruptcorrfile
+	endif
+	if ierr eq 0 and keyword_set(forcecalmask) then makefringeimage, night, time_sci
 
 	;;
 	;; CALIBRATE SCIENCE FRINGE TRACK
 	;;
 	db = vboekelbase()
-	if file_test(scitag+'.corr.fits') and file_test(caltag+'.corr.fits') then $
+	if file_test(scitag+'.corr.fits') and file_test(caltag+'.corr.fits') then begin
+		print, scitag+'.corr.fits'
+		print, file_test(scitag+'.corr.fits')
+		print, caltag+'.corr.fits'
+		print, file_test(caltag+'.corr.fits')
 		midicalibrate, scitag, caltag, caldatabase=db, /nophot
+	endif
 
 	endofprogram: eop=1
 	cd, currentdir
+	
+	if keyword_set(forcecalmask) then begin
+		if file_test(scitag+'.fringeimages.fits') then $
+			lpw, night, time, /skipexcal $
+		else lprint, 'lpw: ' + night + ' / ' + time + ': Science fringe image could not be created. Calibrator mask has not been shifted on science fringe image.'
+	endif
 end

@@ -106,7 +106,7 @@ function closestcal, night, time, verbose=verbose, withphot=withphot, caltests=c
 		if keyword_set(verbose) then begin
 			;;
 			;; print list of best cals
-			print, 'For science source ' + db[s_ix].mcc_name + ' (' + db[s_ix].day + ' / ' + db[s_ix].id + ' / ' + db[s_ix].grism + ' / ' + db[s_ix].beamcombiner + ') at'
+			print, 'For science source ' + db[s_ix].mcc_name + ' (' + db[s_ix].day + ' / ' + db[s_ix].time + ' / ' + db[s_ix].grism + ' / ' + db[s_ix].beamcombiner + ') at'
 			print, '     RA = ' + strtrim(db[s_ix].RA,2)
 			print, '    DEC = ' + strtrim(db[s_ix].DEC,2)
 			print, 'airmass = ' + strtrim(db[s_ix].airm,2)
