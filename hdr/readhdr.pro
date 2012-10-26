@@ -133,7 +133,13 @@ function readhdr, f
       ;; archive file names
       archivef = ''
       for j=0, n_elements(files) - 1 do begin
-	      archivef += string(midigetkeyword('ARCFILE',files[j])) + ' '
+      	  iarchivef = string(midigetkeyword('ARCFILE',files[j]))
+	      archivef += iarchivef + ' '
+	      if files[j] ne iarchivef then begin
+	      	spawn, 'mv ' + files[j] + ' ' + iarchivef
+;	      	print, 'mv ' + files[j] + ' ' + iarchivef
+	      	print, 'renamed ' + files[j] + ' to ' + iarchivef
+	      endif
 	   endfor
 	   archivef = strmid(archivef,0,strlen(archivef)-1)
 		;;

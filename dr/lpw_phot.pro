@@ -44,7 +44,7 @@ pro lpw_phot, night, time, skipexcal=skipexcal, skipexsci=skipexsci
 	;;
 	;; photometry A and B exist?
 	if f_sci[0] eq '' then begin
-		lprint, 'None or only one of A or B phot; skipping'
+		lprint, 'lpw_phot: ' + night + ' / ' + time + ': ' + 'None or only one of A or B phot. Skipping'
 	endif else begin
 		caltime = closestcal(night, time, /verbose, /withphot)
 		if caltime ne '-1' then begin
@@ -60,10 +60,10 @@ pro lpw_phot, night, time, skipexcal=skipexcal, skipexsci=skipexsci
 			
 			if reducecal then begin
 				f_cal = getphotfiles(night, caltime)
-				faintphotopipe, caltag, f_cal, mask=srcmask, skymask=skymask
+				midiphotopipe, caltag, f_cal, mask=srcmask, skymask=skymask
 				cmd = 'oirRedCal ' + caltag
 				spawn, cmd
-			endif else lprint, 'Skipping calibrator photometry reduction: all required files exist'
+			endif else lprint, 'lpw_phot: ' + night + ' / ' + time + ': ' + 'Skipping calibrator photometry reduction. All required files exist'
 	
 			
 			; corr.fits is needed because midicalibrate requires redcal.fits (instrumental visibility)
@@ -74,11 +74,11 @@ pro lpw_phot, night, time, skipexcal=skipexcal, skipexsci=skipexsci
 			if not file_test(caltag + '.redcal.fits') then spawn, 'oirRedCal ' + caltag
 	
 			if keyword_set(skipexsci) and file_test(scitag+'.photometry.fits') then begin
-				lprint, 'Skipping science target photometry reduction: all required files exist'
+				lprint, 'lpw_phot: ' + night + ' / ' + time + ': ' + 'Skipping science target photometry reduction. All required files exist'
 				reducesci = 0
 			endif else reducesci = 1
 	
-			if reducesci then faintphotopipe, scitag, f_sci, mask=srcmask, skymask=skymask
+			if reducesci then midiphotopipe, scitag, f_sci, mask=srcmask, skymask=skymask
 
 			if not file_test(scitag + '.corr.fits') then begin
 				delete_corr_sci = 1
@@ -102,6 +102,6 @@ pro lpw_phot, night, time, skipexcal=skipexcal, skipexsci=skipexsci
 			if delete_corr_sci then spawn, 'rm ' + scitag + '.corr.fits'
 			if delete_redcal_sci then spawn, 'rm ' + scitag + '.redcal.fits'
 
-		endif else lprint, 'No suitable calibrator found. Skipping this obs.'
+		endif else lprint, 'lpw_phot: ' + night + ' / ' + time + ': ' + 'No suitable calibrator found. Skipping this obs.'
 	endelse
 end

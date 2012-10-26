@@ -12,12 +12,18 @@
 ;; OPTIONS:
 ;;    nophot        do not search for photometry files;
 ;;                     if not set: skips tracks where no photometry is found
+;;    dironly       only return directory for given night; for the time being, one has to 
+;;                     give an arbitrary timestring
 ;;
 ;; LIMITATIONS:
 ;;    currently only works with nophot option set
 ;;
-function loadf, night, time, nophot=nophot
-	cd, '$MIDIDATA/'+night
+function loadf, night, time, nophot=nophot, dironly=dironly
+	datadir = '$MIDIDATA/'+night
+	
+	if keyword_set(dironly) then return, datadir
+
+	cd, datadir
 	
 	restore, '$MIDITOOLS/local/obs/obs_db.sav'
 	ix = where(db.day eq night and db.time eq time)

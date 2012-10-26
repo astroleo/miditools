@@ -18,6 +18,9 @@ pro lpsourcew, sourcename, year=year, maxyear=maxyear, ix=ix, reduce=reduce, obs
 	else $
 		ix = where(db.mcc_name eq sourcename and db.dpr eq 'FT' and db.mode ne 'OBS_FRINGE_TRACK_FOURIER')
 	
+	; sort by observing date
+	ix = ix[sort(db[ix].mjd_start)]
+	
 	; for Circinus: all AT data + published UT data
 	if sourcename eq 'Circinus' then ix=where(db.mcc_name eq 'Circinus' and db.dpr eq 'FT' and (float(strmid(db.day,0,4)) le 2006 or strmid(db.telescope,0,1) ne 'U'))
 
@@ -31,6 +34,11 @@ pro lpsourcew, sourcename, year=year, maxyear=maxyear, ix=ix, reduce=reduce, obs
 
 	if keyword_set(reduce) then begin
 		for i=0, n_elements(ix)-1 do begin
+			datadir = loadf(db[ix[i]].day, '', /dironly)
+			if not file_test(datadir) then begin
+				lprint, 'lpsourcew: Skipping data reduction for ' + db[ix[i]].day + '. Data directory ' + datadir + ' not found.'
+				continue
+			endif
 			print, i, db[ix[i]].day, db[ix[i]].time, db[ix[i]].TELESCOPE, db[ix[i]].grism, db[ix[i]].beamcombiner, db[ix[i]].mode, $
 				format='(I3, "   ", A10, "   ", A8, "   ", A4, "   ", A5, "   ", A9, "   ", A30)'
 			if obs_good(db[ix[i]].day, db[ix[i]].time) ne 0 then begin
@@ -39,4 +47,5 @@ pro lpsourcew, sourcename, year=year, maxyear=maxyear, ix=ix, reduce=reduce, obs
 			endif else print, 'Observation not reducible / not calibratable'
 		endfor
 	endif
+	if keyword_set(reduce) then lprint, 'Finished reducing data for ' + sourcename
 end

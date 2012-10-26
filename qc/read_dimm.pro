@@ -56,7 +56,8 @@ function read_dimm, night
 			save, dimm, filename=IDL_file
 		endif else begin
 			print, 'File not found: ' + txt_file
-			stop
+			dimm = {t_UT:-1, ra:-1, dec:-1, airmass:-1, seeing:-1, flux_rms:-1, tau0:-1, theta0:-1}
+			;stop
 		endelse
 	endif else restore, IDL_file
 	return, dimm

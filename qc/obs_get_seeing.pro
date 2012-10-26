@@ -5,6 +5,10 @@
 function obs_get_seeing, night, time, verbose=verbose
 	restore, '$MIDITOOLS/local/obs/obs_db.sav'
 	dimm = read_dimm(night)
+	if dimm.t_UT[0] eq -1 then begin
+		if keyword_set(verbose) then lprint, 'No seeing available for ' + night + ' / ' + time
+		return, -1.
+	endif
 	
 	; check if time array is sorted monotonically in time
 ;	if sort(dimm.t_ut) ne lonarr(n_elements(t_ut)) then stop ; doesn't work -- IDL cannot compare arrays this way
