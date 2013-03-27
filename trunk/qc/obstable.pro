@@ -18,10 +18,15 @@ pro obstable, sourcename, tex=tex
 
 	; sort by observing date
 	ix = ix[sort(db[ix].mjd_start)]
+	
+	o_total=0.
+	o_total_good=0.
+	o_ph_total=0.
+	o_ph_good_total=0.
 
 	istack = 0
 
-	lprint, 'Found the following ' + string(n_elements(ix)) + ' observations for ' + sourcename
+	lprint, 'Found ' + string(n_elements(ix)) + ' observations for ' + sourcename
 		;;	             Fringe track information                                                                            | FT Quality Control               | Photometry        | Photometry QC  | Calibration
 	if keyword_set(tex) then begin
 		outfiledir = '$MIDILOCAL/obs/sources'
@@ -30,25 +35,25 @@ pro obstable, sourcename, tex=tex
 		outfilename = outfilebase + '.tex'
 		cd, outfiledir, current=current
 		openw, lun, outfilename, /get_lun
-			printf, lun,  '\documentclass[11pt,a4paper,landscape]{article}'
-			printf, lun,  '\usepackage[latin1]{inputenc}'
-			printf, lun,  '\usepackage{graphicx}'
-			printf, lun,  '\usepackage{amssymb}'
-			printf, lun,  '\usepackage{epstopdf}'
-			printf, lun,  '\usepackage{hyperref}'
-			printf, lun,  ''
-			printf, lun,  '\textwidth = 250 mm'
-			printf, lun,  '\textheight = 170 mm'
-			printf, lun,  '\oddsidemargin = 0.0 mm'
-			printf, lun,  '\evensidemargin = 0.0 mm'
-			printf, lun,  '\topmargin = 0.0 mm'
-			printf, lun,  '\headheight = 0.0 mm'
-			printf, lun,  '\headsep = 0.0 mm'
-			printf, lun,  '\parskip = 0.5 mm'
-			printf, lun,  '\parindent = 0.0in'
-			printf, lun,  ''
-			printf, lun,  '\begin{document}'
-			printf, lun,  ''
+;			printf, lun,  '\documentclass[11pt,a4paper,landscape]{article}'
+;			printf, lun,  '\usepackage[latin1]{inputenc}'
+;			printf, lun,  '\usepackage{graphicx}'
+;			printf, lun,  '\usepackage{amssymb}'
+;			printf, lun,  '\usepackage{epstopdf}'
+;			printf, lun,  '\usepackage{hyperref}'
+;			printf, lun,  ''
+;			printf, lun,  '\textwidth = 250 mm'
+;			printf, lun,  '\textheight = 170 mm'
+;			printf, lun,  '\oddsidemargin = 0.0 mm'
+;			printf, lun,  '\evensidemargin = 0.0 mm'
+;			printf, lun,  '\topmargin = 0.0 mm'
+;			printf, lun,  '\headheight = 0.0 mm'
+;			printf, lun,  '\headsep = 0.0 mm'
+;			printf, lun,  '\parskip = 0.5 mm'
+;			printf, lun,  '\parindent = 0.0in'
+;			printf, lun,  ''
+;			printf, lun,  '\begin{document}'
+;			printf, lun,  ''
 			printf, lun,  '\begin{table}'
 			printf, lun,  '\caption{Log of observations: ' + sourcename + '}'
 			printf, lun,  '\centering'
@@ -68,7 +73,7 @@ pro obstable, sourcename, tex=tex
 	for i=0, n_elements(ix)-1 do begin
 		if keyword_set(tex) then begin
 			; if too many entries on one page, start new page
-			if (i ne 0 and (i mod 20 eq 0)) then begin
+			if (i ne 0 and (i mod 50 eq 0)) then begin
 				printf, lun,  '\hline'
 				printf, lun,  '\end{tabular}'
 				printf, lun,  '\end{table}'
@@ -76,7 +81,7 @@ pro obstable, sourcename, tex=tex
 				printf, lun,  '\clearpage'
 				printf, lun, ''
 				printf, lun,  '\begin{table}'
-				printf, lun,  '\caption{Log of observations: ' + sourcename + '}'
+				printf, lun,  '\caption{Log of observations: ' + sourcename + ' (continued)}'
 				printf, lun,  '\centering'
 				printf, lun,  '\begin{tabular}{c c c c c c c c c c c c c c c c}'
 				printf, lun,  '\hline\hline'
@@ -141,6 +146,12 @@ pro obstable, sourcename, tex=tex
 		if ix_A[0] eq -1 then N_APHOT=0 else N_APHOT=n_elements(ix_A)
 		ix_B = where(db.day eq db[ix[i]].day and db.id eq db[ix[i]].id and db.dpr eq 'PH' and db.shut eq 'B')
 		if ix_B[0] eq -1 then N_BPHOT=0 else N_BPHOT=n_elements(ix_B)
+		
+		o_total++
+		if N_APHOT ge 1 and N_BPHOT ge 1 then o_ph_total++
+		if o eq 1 then o_total_good++
+		if o_ph eq 1 then o_ph_good_total++
+
 				
 		seeing=obs_get_seeing(db[ix[i]].day, db[ix[i]].time)
 
@@ -158,17 +169,21 @@ pro obstable, sourcename, tex=tex
 		printf, lun,  '\hline'
 		printf, lun,  '\end{tabular}'
 		printf, lun,  '\end{table}'
-		printf, lun,  '\end{document}'
+;		printf, lun,  '\end{document}'
 		free_lun, lun
 		; compile PDF (run LaTeX)
-		cmd = 'pdflatex ' + outfilename + ' >> /tmp/pdflatexlog'
-		spawn, cmd
-		delfiles = ['.aux','.log','.out']
-		for i=0, n_elements(delfiles)-1 do begin
-			cmd = 'rm ' + outfiledir + '/' + outfilebase + delfiles[i]
-			spawn, cmd
-		endfor
+;		cmd = 'pdflatex ' + outfilename + ' >> /tmp/pdflatexlog'
+;		spawn, cmd
+;		delfiles = ['.aux','.log','.out']
+;		for i=0, n_elements(delfiles)-1 do begin
+;			cmd = 'rm ' + outfiledir + '/' + outfilebase + delfiles[i]
+;			spawn, cmd
+;		endfor
 		cd, current
-		print, 'Compiled .tex file, removed intermediate files, output: ' + outfilename
+;		print, 'Compiled .tex file, removed intermediate files, output: ' + outfilename
 	endif
+	
+	print, o_total, o_ph_total, format='("Total number of (photometry) observations", I3, "(", I3, ")")'
+	print, o_total_good, o_ph_good_total, format='("Total number of good (photometry) observations", I3, "(", I3, ")")'
+	print, o_total_good/o_total, o_ph_good_total/o_ph_total, format='("Fraction of good (photometry) observations", f5.2, "(", f5.2, ")")'
 end

@@ -4,7 +4,7 @@
 ;; FUNCTION GAIN
 ;;
 ;; PURPOSE:
-;;    determine corr + phot gain of one calibrator star
+;;    determine (raw) corr + phot gain of one calibrator star (NOT taking airmass fluctuations within the night into account)
 ;;
 ;; PARAMETERS:
 ;;    night    e.g. '2010-05-31'
@@ -103,26 +103,52 @@ pro gain_reduce, nights=nights, nightfile=nightfile
 end
 
 ;;
+;; PRO gain_airm_fit
+;;
+;; PURPOSE:
+;;    fit a linear function to a number of log(gain) vs. airmass values
+;;
+function line, airmass, params
+	return, params[0] + params[1] * airmass
+end
+
+pro gain_airm_fit, gains, params=params, ps=ps
+	params=mpfitfun('line', gains.airmass, alog10(gains.gain12_5_2), 1.+fltarr(n_elements(gains.airmass)), [3.,0.], /quiet)
+	if keyword_set(ps) then ps_start, filename='$MIDILOCAL/obs/gain_airmass/'+gains[0].night+'.ps'
+	cgplot, gains.airmass, alog10(gains.gain12_5_2), psym=1, xr=[1.0,3.0],yr=[0.,4.]
+	ams=1+findgen(200)/100.
+	cgplot, /over, ams, line(ams, params)
+	cgtext, 1.5, 1.0, gains[0].night, charsize=2
+	if keyword_set(ps) then ps_end
+end
+
+;;
 ;; PRO gainstruct
 ;;
 ;; PURPOSE:
 ;;    collect gains for all nights listed in nightfile
 ;;		determine if cal obs are good (obs_good)
 ;;		determine averaged gains in a number of wavelength bins
+;;      fit linear function to log(gain) vs airmass and take this fit out
 ;;		store in gainfile
 ;;
 ;;
 
-pro gainstruct, nights=nights, nightfile=nightfile, gainfile=gainfile, nophot=nophot
+pro gainstruct, nophot=nophot, nights=nights
+	if not keyword_set(nophot) then begin
+		print, 'Do I really want to run without /nophot? (then remove this line)'
+		return
+	endif
+	gainfile='$MIDITOOLS/local/obs/gains.sav'
 	dbfile = '$MIDITOOLS/local/obs/obs_db.sav'
 	restore, dbfile
 	
 	if not keyword_set(nights) then begin
-		if not keyword_set(nightfile) then nightfile='$MIDITOOLS/local/obs/nights.txt'
-		nights = readnightfile(nightfile)
+		sourcesfile = '$MIDITOOLS/local/obs/sources_lp_paper_fit.txt'
+		sources = read_text(sourcesfile)
+		sources = reform(sources[0,*])
+		nights = sourcenights(sources)
 	endif
-
-	if not keyword_set(gainfile) then gainfile='$MIDITOOLS/local/obs/gains.sav'
 	;;
 	k=0
 	for i=0, n_elements(nights) -1 do begin
@@ -166,7 +192,7 @@ pro gainstruct, nights=nights, nightfile=nightfile, gainfile=gainfile, nophot=no
 				gain10_5_2 = midiavgflux(gain.corrgain, 10.5, 0.2)
 				gain12_5_2 = midiavgflux(gain.corrgain, 12.5, 0.2)
 		
-				onegain = {night:nights[i], id:db[c_ix[j]].id, time:db[c_ix[j]].time, mjd_start:db[c_ix[j]].mjd_start, hh:hh, name:db[c_ix[j]].mcc_name, baseline:db[c_ix[j]].telescope, gain:gain, gain8_5_2:gain8_5_2, gain10_5_2:gain10_5_2, gain12_5_2:gain12_5_2, obs_good:g}
+				onegain = {night:nights[i], id:db[c_ix[j]].id, time:db[c_ix[j]].time, mjd_start:db[c_ix[j]].mjd_start, airmass:db[c_ix[j]].airm, hh:hh, name:db[c_ix[j]].mcc_name, baseline:db[c_ix[j]].telescope, gain:gain, gain8_5_2:gain8_5_2, gain10_5_2:gain10_5_2, gain12_5_2:gain12_5_2, dgain12_5_2:-1., obs_good:g}
 				if n_elements(gains) eq 0 then gains = onegain else gains = [gains, onegain]
 				print, 'done with ' + db[c_ix[j]].time + ' (goodness is ' + string(g) + ')'
 			endif else begin
@@ -175,7 +201,20 @@ pro gainstruct, nights=nights, nightfile=nightfile, gainfile=gainfile, nophot=no
 			endelse
 		endfor
 		print, 'done with ' + nights[i]
+		ix_night=where(gains.night eq nights[i] and gains.obs_good eq 1)
+		if n_elements(ix_night) ge 3 then begin
+			;
+			; determine gain(airmass) function as a function of wavelength
+			gain_airm_fit, gains[ix_night], params=params, /ps
+			;
+			; for each gain of this night, calculate dgain = gain_raw - gain(airmass) and store in struct
+			for j=0, n_elements(ix_night) - 1 do begin
+				gains[ix_night[j]].dgain12_5_2 = gains[ix_night[j]].gain12_5_2 - line(gains[ix_night[j]].airmass, params)
+			end
+		endif
+		;
 		save, gains, filename=gainfile
 	endfor
+	wait, 1
 	print, 'Skipped ' + strtrim(k,2) + ' calibs (no match in cal database or no corr or no phot measurement or data not reduced)'
 end

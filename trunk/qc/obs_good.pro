@@ -23,6 +23,9 @@ function obs_good, night, time, o3=o3, NGOOD=NGOOD, phot=phot, cts=cts
 	if keyword_set(phot) and keyword_set(NGOOD) then stop
 	if not keyword_set(phot) and keyword_set(cts) then stop
 	
+	o3=-1
+	NGOOD=-1
+	
 	if keyword_set(phot) then begin
 		restore, '$MIDITOOLS/local/obs/obs_db.sav'
 		ix_track = where(db.day eq night and db.time eq time and db.dpr eq 'FT')
@@ -37,6 +40,7 @@ function obs_good, night, time, o3=o3, NGOOD=NGOOD, phot=phot, cts=cts
 	;; tests	
 	if keyword_set(phot) then m = man_bad_phot(night,time) else $
 		m = man_bad_track(night,time)
+	if m eq 0 then return, 0
 	
 	if keyword_set(phot) then good = man_good_phot(night,time) else $
 		good = man_good_track(night,time)
@@ -44,26 +48,17 @@ function obs_good, night, time, o3=o3, NGOOD=NGOOD, phot=phot, cts=cts
 	if keyword_set(phot) then begin
 		o3A = o3(tag, /A)
 		o3B = o3(tag, /B)
-		o3 = -1
 	endif else o3 = o3(tag, /corr)
-	
+		
 	if keyword_set(phot) then begin
 		;; test for photometries
 		cts = ncounts_phot(night, time)
 	endif else begin
 		;; test for fringe tracks
 		flagfile = tag+'.flag.fits'
-		if not file_test(flagfile) then begin
-			NGOOD = -1
-			return, -1
-		endif else $
+		if not file_test(flagfile) then return, -1 else $
 			NGOOD = long(midigetkeyword('NGOOD',flagfile))
 	endelse
-	
-	if m eq 0 then begin
-		o3 = '-1'
-		NGOOD = '-1'
-	endif
 	
 	;;
 	;; parameters
@@ -85,6 +80,6 @@ function obs_good, night, time, o3=o3, NGOOD=NGOOD, phot=phot, cts=cts
 		if good eq 1 then return, 1 else $
 			if m eq 1 and o3 le o3_max and NGOOD gt NGOOD_min then return, 1 else $
 			if m eq 1 and (o3 gt o3_max or NGOOD le NGOOD_min) then return, 0 else $
-			if m eq 0 then return, 0 else return, -1
+				return, -1
 	endelse
 end

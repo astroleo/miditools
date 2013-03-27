@@ -5,7 +5,7 @@
 ;;
 ;; required input: sourcename
 ;;
-pro lpsourcew, sourcename, year=year, maxyear=maxyear, ix=ix, reduce=reduce, obstable=obstable
+pro lpsourcew, sourcename, year=year, maxyear=maxyear, ix=ix, reduce=reduce, obstable=obstable, compressed=compressed
 	;;
 	;; POLITICAL data selection
 	;;
@@ -22,7 +22,16 @@ pro lpsourcew, sourcename, year=year, maxyear=maxyear, ix=ix, reduce=reduce, obs
 	ix = ix[sort(db[ix].mjd_start)]
 	
 	; for Circinus: all AT data + published UT data
-	if sourcename eq 'Circinus' then ix=where(db.mcc_name eq 'Circinus' and db.dpr eq 'FT' and (float(strmid(db.day,0,4)) le 2006 or strmid(db.telescope,0,1) ne 'U'))
+	if sourcename eq 'Circinus' then begin
+		ix=where(db.mcc_name eq 'Circinus' and db.dpr eq 'FT' and (float(strmid(db.day,0,4)) le 2006 or strmid(db.telescope,0,1) ne 'U'))
+		print, 'For Circinus selecting only published UT data and all AT data'
+	endif
+
+	; for NGC 1068: all data except 2012 AT data
+	if sourcename eq 'NGC1068' then begin
+		ix=where(db.mcc_name eq 'NGC1068' and db.dpr eq 'FT' and float(strmid(db.day,0,4)) le 2007)
+		print, 'For NGC 1068 selecting only data taken before 2007, including some unpublished AT data'
+	endif
 
 
 	if ix[0] eq -1 then begin

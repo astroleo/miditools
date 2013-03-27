@@ -18,15 +18,19 @@ function lpavgflx, calcorr, calcorrerr, gain_rms_rel, lam, dlam
 	
 	;;
 	;; determine factor of decorrelation correction
-	f_undecorr = lp_undecorr(lam, avgflx, f_undecorr_rms=f_undecorr_rms)
-	avgflx_undecorr = avgflx * f_undecorr
+	;; DEACTIVATED: In EWS 2.0 decorrelation losses are negligible for 12.5 mu fluxes >~ 150 mJy
+	;;               -- but take into account for faint fluxes shortwards of 12 mu!
+;	f_undecorr = lp_undecorr(lam, avgflx, f_undecorr_rms=f_undecorr_rms)
+;	avgflx_undecorr = avgflx * f_undecorr
 	;;
 	;; calculate total error of averaged correlated flux
 	;; error of decorrelation correction factor is assumed to be independent from gain error
-	;;
-	avgflx_undecorr_err = sqrt(1/N * avgerr^2 + avgflx^2 * (f_undecorr_rms^2 + (f_undecorr * avggain_rms_rel)^2))
+	;; DEACTIVATED -- but take into account for faint fluxes shortwards of 12 mu!
+;	avgflx_undecorr_err = sqrt(1/N * avgerr^2 + avgflx^2 * (f_undecorr_rms^2 + (f_undecorr * avggain_rms_rel)^2))
+	avgflx_err = sqrt(1/N * avgerr^2 + avgflx^2 * avggain_rms_rel^2)
 
-	return, {avg:avgflx_undecorr, avg_rms:avgflx_undecorr_err}
+;	return, {avg:avgflx_undecorr, avg_rms:avgflx_undecorr_err}
+	return, {avg:avgflx, avg_rms:avgflx_err}
 end
 
 function lpavgphase, calphi, calphierr, lam, dlam
@@ -65,7 +69,8 @@ function gainstat, night, times=times
 			gain_rms[i] = rms(gains[ix].gain.corrgain[i])
 		endfor
 	
-		gainstat = {avg:gain_avg, rms:gain_rms}
+		
+		gainstat = {avg:gain_avg, rms:gain_rms, ncals:n_elements(ix)}
 	endelse
 	return, gainstat
 end
@@ -111,7 +116,8 @@ end
 ;; OPTIONS:
 ;;    nogain   do not include gain variations in error
 ;;
-;; FIXME -- modify lp_undecorr to correct spectra, not only averaged fluxes
+;; (FIXME -- modify lp_undecorr to correct spectra, not only averaged fluxes)
+;;   --- DEACTIVATED --- currently no decorrelation correction since it is not needed for 12.5 mu fluxes as low as 150 mJy with EWS 2.0 -- but take into account for lower fluxes or shorter wavelengths!
 ;;
 pro lp_calibrate, night, time, tag_sci, source=source, nogain=nogain
 	f_sci = tag_sci+'.calcorr.fits'
