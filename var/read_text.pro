@@ -1,4 +1,4 @@
-;; FUNCTION READ_MP
+;; FUNCTION READ_TEXT
 ;; 
 ;; PURPOSE:
 ;;    Helper function to read in blank separated text files
@@ -7,6 +7,7 @@
 ;;
 ;; PARAMETERS
 ;;    sep    alternative separator
+;;
 ;;
 function read_text, filename, sep=sep
 	if not keyword_set(sep) then sep = ' '

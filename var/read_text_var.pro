@@ -16,6 +16,7 @@ function read_text_var, filename, sep=sep
 		;;
 		;; build struct
 		one={night:oneline[0], time:oneline[1], sourcename:oneline[2], comment:oneline[3]}
+	;	one={time:oneline[1], co:oneline[5]}
 		if (i eq 0) then data = one else data = [data, one]
 		i=i+1
 	endwhile

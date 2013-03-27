@@ -4,6 +4,10 @@
 ;; PURPOSE:
 ;;    Determine depth of ozone feature relative to interpolated "continuum"
 ;;
+;; CHANGE LOG
+;; 2012-11-23   changed fit boundaries to better match O3 profile
+;;
+;;
 function o3, tag, pl=pl, corr=corr, wl=wl, y=y, A=A, B=B, ncts=ncts
 	if keyword_set(corr) then begin
 		ext = '.corr.fits'
@@ -28,7 +32,8 @@ function o3, tag, pl=pl, corr=corr, wl=wl, y=y, A=A, B=B, ncts=ncts
 	gr=strtrim(midigetkeyword('INS GRIS ID',filename),2)
 	;;
 	;; define boundaries for fit
-	wl=[8.8,9.2,9.55,9.75,10.1,10.5]
+;	wl=[8.8,9.2,9.55,9.75,10.1,10.5]
+	wl=[8.8,9.2,9.4,9.8,10.1,10.5]
 	if gr eq 'GRISM' then begin
 		restore, '$MIDITOOLS/MIDI/w_grism.sav'
 		grism=1

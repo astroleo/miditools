@@ -4,9 +4,10 @@
 @$MIDITOOLS/qc/gain
 @$MIDITOOLS/qc/read_dimm
 @$MIDITOOLS/qc/obs_good
+@$MIDITOOLS/LP/lp_calibrate
 
 ; purpose: compute statistics for gains of one night
-pro gainstat_old, night, gainfile=gainfile, stat=stat
+pro gainstat_old, night, gainfile=gainfile, stat=stat, ix=ix
 	if not keyword_set(gainfile) then gainfile='$MIDITOOLS/local/obs/gains.sav'
 	restore, gainfile
 	ix = where(gains.night eq night and gains.obs_good)
@@ -21,9 +22,22 @@ pro gainstat_old, night, gainfile=gainfile, stat=stat
 end
 
 
-; currently only for correlated fluxes
+function datetime2ix, nights, times
+	restore, '$MIDITOOLS/local/obs/obs_db.sav'
+	if n_elements(nights) ne n_elements(times) then stop
+	for i=0, n_elements(nights)-1 do begin
+		ix1 = where(db.day eq nights[i] and db.time eq times[i])
+		if n_elements(dbix) eq 0 then dbix = ix1 else dbix = [dbix, ix1]
+	endfor
+	return, dbix
+end
 
-pro gainplot, gainfile=gainfile, night, outdir=outdir
+; currently only for correlated fluxes
+;;
+;; ATs: set keyword if observing nights was with ATs
+;;
+
+pro gainplot, gainfile=gainfile, night, outdir=outdir, ATs=ATs
 	restore, '$MIDITOOLS/local/obs/obs_db.sav'
 	if not keyword_set(gainfile) then gainfile = '$MIDITOOLS/local/obs/gains.sav'
 	restore, gainfile
@@ -37,177 +51,132 @@ pro gainplot, gainfile=gainfile, night, outdir=outdir
 		if not keyword_set(outdir) then dirname='$MIDILOCAL/obs/gainplots' else dirname = outdir
 		if not file_test(dirname) then spawn, 'mkdir ' + dirname
 	
-		filename=night
-		
-		startplot, dirname=dirname, filename=filename, landscape='p', xsize=18, ysize=25, xoffset=1., yoffset=1.
-			!p.multi = [0,1,4]
+		ps_start, filename=dirname+'/'+night+'.ps'
 			corrsym = 4
 			badcorrsym = 7
 	
-			dimm = read_dimm(night)
-			; get smoothed values
-			if dimm.tau0[0] ne -1 and dimm.seeing[0] ne -1 and dimm.flux_rms[0] ne -1 then begin
-				tau0 = ambismooth(dimm.t_UT, dimm.tau0, 10)
-				seeing = ambismooth(dimm.t_UT, dimm.seeing, 10)
-				flux_rms = ambismooth(dimm.t_UT, dimm.flux_rms, 10)
-				plotambi=1
-			endif else plotambi=0
-	
 			; (1) gains + tau_0
-			maxgain = 3000
-			maxtau0 = 10
-			gain_tau0_factor = maxgain/maxtau0
+			if keyword_set(ATs) then maxgain = 180 else maxgain = 2000
 	
-			plot, indgen(100), indgen(100), xr=[-2,12], yr=[0,maxgain], xstyle=1, ystyle=9, xtitle='Hours since midnight UT', ytitle='Correlated flux gain [counts/(s Jy)]', /nodata, charsize=1.5
-			yticklabels = [0, 2.5, 5, 7.5, 10]
-			ytickv = yticklabels*gain_tau0_factor
-			ytickname = ['0.0','2.5','5.0','7.5','10.0']
-			axis, yaxis=3, ystyle=1, ytickv=ytickv, ytickname=ytickname, yticks=n_elements(ytickv), ytitle = 'DIMM tau_0 [ms]', charsize=1.5
-	
-			; plot gains for cals
-			if ix_good[0] ne -1 then begin
-				plots, gains[ix_good].hh, gains[ix_good].gain8_5_2, psym=corrsym, color=5
-				plots, gains[ix_good].hh, gains[ix_good].gain10_5_2, psym=corrsym, color=4
-				plots, gains[ix_good].hh, gains[ix_good].gain12_5_2, psym=corrsym, color=3
-			endif
-			if ix_bad[0] ne -1 then begin
-				plots, gains[ix_bad].hh, gains[ix_bad].gain8_5_2, psym=badcorrsym, color=5
-				plots, gains[ix_bad].hh, gains[ix_bad].gain10_5_2, psym=badcorrsym, color=4
-				plots, gains[ix_bad].hh, gains[ix_bad].gain12_5_2, psym=badcorrsym, color=3
-			endif
-	
-			if plotambi then $
-				oplot, tau0.t_UT, tau0.ambi * gain_tau0_factor, psym=3
-;			xyouts, gains[ix_all].hh, 100+gains[ix_all].gain8_5_2, gains[ix_all].time, charsize=0.7, alignment=0.5, orientation=90
-			xyouts, 5, 3500, night, alignment=0.5
+			cgplot, indgen(100), indgen(100), xr=[0,12], yr=[0,maxgain], xstyle=1, ystyle=1, ytitle='Conversion factor [counts/(Jy s px)]', /nodata, charsize=1.5, xtitle='Hours since midnight UT'
 			
+			maxam = 2.5
+			gain_am_factor = maxgain/maxam
+
+;			yticklabels = [1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5]
+;			airmoffset = 0.7
+;			ytickv = (yticklabels - airmoffset) *gain_am_factor
+;			ytickname = ['1.00','1.25','1.50','1.75','2.00','2.25', '2.50']
+;			cgaxis, yaxis=3, ystyle=1, ytickv=ytickv, ytickname=ytickname, yticks=n_elements(ytickv), ytitle = 'Airmass', charsize=1.5
+
+
+			; plot gains for cals
+			cgplots, gains[ix_good].hh, gains[ix_good].gain8_5_2, psym=corrsym, color='blue', symsize=1.5
+			cgplots, gains[ix_good].hh, gains[ix_good].gain10_5_2, psym=corrsym, color='green', symsize=1.5
+			cgplots, gains[ix_good].hh, gains[ix_good].gain12_5_2, psym=corrsym, color='red', symsize=1.5
+			
+			; plot airmass
+;			dbix = datetime2ix(gains[ix_good].night, gains[ix_good].time)
+;			cgplots, gains[ix_good].hh, (db[dbix].airm-airmoffset) * gain_am_factor, psym=2
+				
 			;; read in obs_good, overplot science observations
 			ix_night = where(db.day eq night and db.catg eq 'SCIENCE' and db.dpr eq 'FT')
+			plotsym, 3
 			if ix_night[0] ne -1 then begin
 				for i=0, n_elements(ix_night)-1 do begin
-					if i mod 2 eq 0 then offset = 0.03 else offset = -0.05
 					hh = hhmmss(db[ix_night[i]].time)
 					obs_good = obs_good(night, db[ix_night[i]].time)
-					if obs_good eq 1 then plots, hh, maxgain*0.8, psym=corrsym, symsize=0.5 else $
-						plots, hh, maxgain*0.8, psym=badcorrsym, symsize=0.5
-;					xyouts, hh, maxgain*(0.8+offset), db[ix_night[i]].time, charsize=0.35, alignment=0.5, orientation=90
+					cgplots, hh, maxgain*0.9, psym=8, symsize=1
 				endfor
 			endif
 			
-			; oplot MACAO tau0
-			ix_all_db = where(db.day eq night and db.dpr eq 'FT')
-			ix_t01 = where(db[ix_all_db].COU_AO1_T0_MEAN gt 0)
-			ix_t02 = where(db[ix_all_db].COU_AO2_T0_MEAN gt 0)
-			if ix_t01[0] ne -1 then begin
-				ix_t01 = ix_all_db[ix_t01]
-				hh_01 = hhmmss(db[ix_t01].time)
-				t0mean1_ms = db[ix_t01].COU_AO1_T0_MEAN
-				plots, hh_01, gain_tau0_factor/10 * t0mean1_ms, psym=5, color=2
-				plots, [-1.5, 2500], psym=6, color=2 & xyouts, -1.3, 2500, 'Telescope 1 MACAO tau0 / 10', charsize=0.7, color=2
-			endif else xyouts, -1.3, 2500, 'Telescope 1 MACAO tau0 not available', charsize=0.7
-			if ix_t02[0] ne -1 then begin
-				ix_t02 = ix_all_db[ix_t02]
-				hh_02 = hhmmss(db[ix_t02].time)
-				t0mean2_ms = db[ix_t02].COU_AO2_T0_MEAN
-				plots, hh_02, gain_tau0_factor/10 * t0mean2_ms, psym=6, color=2
-				plots, [-1.5, 2800], psym=5, color=2 & xyouts, -1.3, 2800, 'Telescope 2 MACAO tau0 / 10', charsize=0.7, color=2
-			endif else xyouts, -1.3, 2800, 'Telescope 2 MACAO tau0 not available', charsize=0.7
-
-			
-			; (2) clouds
-			if plotambi then $
-				plot, flux_rms.t_UT, flux_rms.ambi, psym=3, xr=[-2, 12], yr=[0,0.05], xstyle=1, ystyle=9, ytitle='DIMM flux rms', charsize=1.5
-			yticklabels = [0, 45, 90, 135, 180]
-			cloud_dist_factor = 0.05/180
-			ytickv = yticklabels*cloud_dist_factor
-			ytickname = ['0','45','90','135','180']
-			axis, yaxis=3, ystyle=1, ytickv=ytickv, ytickname=ytickname, yticks=n_elements(ytickv), ytitle = 'DIMM-VLTI pointing diff. [deg]', charsize=1.5
-
-			;;
-			;; print DIMM-VLTI pointing difference in degree for each observation
-			if plotambi then begin
-				for i=0, n_elements(ix_all)-1 do begin
-					dv_diff=dimm_pointing_diff(night,gains[ix_all[i]].time)
-					if dv_diff ne -1 then begin
-						if n_elements(dimm_vlti_diff) eq 0 then begin
-							dimm_vlti_diff = dv_diff
-							t_ut = gains[ix_all[i]].hh
-						endif else begin
-							dimm_vlti_diff = [dimm_vlti_diff,dv_diff]
-							t_ut = [t_ut, gains[ix_all[i]].hh]
-						endelse
-					endif
-				endfor
-				if n_elements(t_ut) eq 1 then plots, t_ut, dimm_vlti_diff*cloud_dist_factor else $
-					oplot, t_ut, dimm_vlti_diff*cloud_dist_factor, psym=1
-			endif
-			
-			
-	;		plot, flux_rms.t_UT, flux_rms.ambi, psym=3, xr=[-2, 12], yr=[0,0.05], xstyle=1, ystyle=9, ytitle='DIMM flux rms', charsize=1.5
-	;		plots, hhmmss(db[ix_all_db].time), 10*db[ix_all_db].INS_PRES1_MEAN, color=3, psym=7
-	;		yticklabels = findgen(6)/1000.
-	;		ytickv = yticklabels*10
-	;		ytickname = strtrim(ytickv,2)
-	;		axis, yaxis=3, ystyle=1, ytickv=ytickv, ytickname=ytickname, yticks=n_elements(ytickv), ytitle = '10 * INS PRES1 MEAN [Pa]', charsize=1.5
-	;		plots, -1.3, 0.04, psym=7, color=3
-	;		xyouts, -1, 0.04, 'pressure'
-	
-	
-			; (3) seeing
-			if plotambi then $
-				plot, seeing.t_ut, seeing.ambi, psym=3, xr=[-2, 12], yr=[0,3], xstyle=1, ytitle='DIMM seeing [arcsec]', charsize=1.5
-	
-			; oplot DIMM seeing from header
-			ix_seeing = where(db[ix_all_db].seeing gt 0)
-			if ix_seeing[0] ne -1 then begin
-				ix_seeing = ix_all_db[ix_seeing]
-				hh_seeing = hhmmss(db[ix_seeing].time)
-				seeing = db[ix_seeing].seeing	
-				plots, hh_seeing, seeing, psym=2, color=2
-				plots, [-1.5, 2.7], psym=2, color=2 & xyouts, -1.3, 2.7, 'DIMM seeing (header)', charsize=0.7, color=2
-			endif
-			
-	
-			; (4) legend, statistical info
-			multibl = 0
-			bl = gains[ix_all[0]].baseline
-	
-			xyouts, -2, -1, 'time     cal name     bad?     BL'
-			
-			; add science obs here
-			
-			for i=0, n_elements(ix_all)-1 do begin
-				xyouts, -2, -1.5-0.25*i, string(gains[ix_all[i]].time, gains[ix_all[i]].name, gains[ix_all[i]].obs_good, gains[ix_all[i]].baseline, format='(A8, A10, A2, A10)')
-				if gains[ix_all[i]].baseline ne bl then multibl = 1
-			endfor
-			
-			if ix_night[0] ne -1 then begin
-				for j=0, n_elements(ix_night)-1 do begin
-					if j le 19 then begin
-						x=6
-						y=-2.0-0.15*j
-						endif else begin
-						x=10
-						y=-2.0-0.15*(j-20)
-					endelse
-					obs_good = obs_good(night, db[ix_night[j]].time)
-					xyouts, x, y, string(db[ix_night[j]].time, db[ix_night[j]].mcc_name, db[ix_night[j]].telescope, format='(A8, A10, A10)'), charsize=0.5
-				endfor
-			endif
-	
-			
-			if multibl ne 0 then xyouts, -3, 11.5, '(!) Multiple baselines', charsize=1.5, color=3
+			cgtext, 11.5, 1.8/2 * maxgain, night, align=1., charsize=1.5
 			
 			; statistics
 			if ix_good[0] ne -1 then begin
-				gainstat_old, night, gainfile=gainfile, stat=stat
-				xyouts, 6, -1, 'lambda        avg gain    gain rms   rms/avg'
-				xyouts, 6, -1.25, string('8.5+/-0.2   ', stat.avg_8_5_2, stat.rms_8_5_2, 100*stat.rms_8_5_2/stat.avg_8_5_2, ' %', format = '(A13, f9.2, f9.2, f8.2, A2)'), color=5
-				xyouts, 6, -1.5, string('10.5+/-0.2   ', stat.avg_10_5_2, stat.rms_10_5_2, 100*stat.rms_10_5_2/stat.avg_10_5_2, ' %', format = '(A13, f9.2, f9.2, f8.2, A2)'), color=4
-				xyouts, 6, -1.75, string('12.5+/-0.2   ', stat.avg_12_5_2, stat.rms_12_5_2, 100*stat.rms_12_5_2/stat.avg_12_5_2, ' %', format = '(A13, f9.2, f9.2, f8.2, A2)'), color=3
+				gainstat_old, night, gainfile=gainfile, stat=stat, ix=ix
+				;
+				; get gainstat for first AGN obs of this night
+				sourcesfile = '$MIDITOOLS/local/obs/sources_lp_paper_fit.txt'
+				sources = read_text(sourcesfile)
+				sources = reform(sources[0,*])
+				time_sci='-1'
+				for i=0, n_elements(sources)-1 do begin
+					ix=where(db.day eq night and strmid(db.mode,0,16) eq 'OBS_FRINGE_TRACK' and db.mcc_name eq sources[i])
+					if ix[0] ne -1 then begin
+						time_sci=db[ix[0]].time
+						break
+					endif
+				endfor
+				if time_sci eq '-1' then stop
+				
+				gainstat=gainselect(night,time_sci)
+				if gainstat.avg[0] ne -1 then begin
+					; compute avg stat
+					avg_8_5_2=midiavgflux(gainstat.avg, 8.5, 0.2)
+					rms_8_5_2=midiavgflux(gainstat.rms, 8.5, 0.2)
+					avg_10_5_2=midiavgflux(gainstat.avg, 10.5, 0.2)
+					rms_10_5_2=midiavgflux(gainstat.rms, 10.5, 0.2)
+					avg_12_5_2=midiavgflux(gainstat.avg, 12.5, 0.2)
+					rms_12_5_2=midiavgflux(gainstat.rms, 12.5, 0.2)
+					
+					xyouts, 0, -500, 'lambda      avg gain    gain rms    rms/avg ', charsize=0.75
+					cgtext, 0, -650, string(avg_8_5_2, rms_8_5_2, 100*rms_8_5_2/avg_8_5_2, format = '("8.5+/-0.2   ", f9.2, "   ", f9.2, "   ", f8.2, " %")'), color='blue', charsize=0.75
+					cgtext, 0, -725, string('10.5+/-0.2   ', avg_10_5_2, rms_10_5_2, 100*rms_10_5_2/avg_10_5_2, ' %', format = '(A13, f9.2, f9.2, f8.2, A2)'), color='green', charsize=0.75
+					cgtext, 0, -800, string('12.5+/-0.2   ', avg_12_5_2, rms_12_5_2, 100*rms_12_5_2/avg_12_5_2, ' %', format = '(A13, f9.2, f9.2, f8.2, A2)'), color='red', charsize=0.75
+					cgtext, 0, -900, string(gainstat.ncals, format='("Number of calibrators used for this computation: ", I2)'), charsize=0.75
+				endif
 			endif
+
 	
-			!p.multi = 0
-		endplot, dirname=dirname, filename=filename
+	ps_end
 	endelse
+end
+
+; returns log10 of cf at airmass am
+function cf_am, am, p
+	r = p[0] - p[1] * (am - 1)
+	return, r
+end
+
+function fit_cf_am, am, gains
+	startp = [3.4, 0.1]
+	gains_err = 0.05*gains
+;	p = mpfitfun('cf_am', am, gains, startp, weights=replicate(1d,n_elements(gains)))
+	p = mpfitfun('cf_am', am, gains, gains_err, startp, parinfo=parinfo, /quiet)
+	return, p
+end
+
+pro amcorrection, night, cf_err_am=cf_err_am, cf_err_noam=cf_err_noam
+	restore, '$MIDITOOLS/local/obs/obs_db.sav'
+	gainfile = '$MIDITOOLS/local/obs/gains.sav'
+	restore, gainfile
+	ix_good = where(gains.night eq night and gains.obs_good eq 1)
+	dbix = datetime2ix(gains[ix_good].night, gains[ix_good].time)
+	
+	p = fit_cf_am(db[dbix].airm, alog10(gains[ix_good].gain12_5_2))
+	
+;	cgplot, db[dbix].airm, alog10(gains[ix_good].gain12_5_2), /nodata, ystyle=1, xr=[1.0,3.0],yr=[1.,4.]
+;	cgplots, db[dbix].airm, alog10(gains[ix_good].gain12_5_2), psym=1
+	
+	ampoints = 1+findgen(200)/100
+;	cgplot, ampoints, cf_am(ampoints, p), /over
+	
+	cf_err_am = stddev(gains[ix_good].gain12_5_2)/avg(gains[ix_good].gain12_5_2) ; airmass dependency NOT removed
+	cf_err_noam = stddev(gains[ix_good].gain12_5_2 - 10^(cf_am(db[dbix].airm,p)))/avg(gains[ix_good].gain12_5_2) ; no airmass dependency
+	
+;	print, cf_err_am, format='("Gain variation at 12.5 micron w/o airmass correction:  ", f6.4)'
+;	print, cf_err_noam, format='("Gain variation at 12.5 micron with airmass correction:  ", f6.4)'
+end
+
+pro amcorr_many, cf_err=cf_err
+	sourcesfile = '$MIDITOOLS/local/obs/sources_lp_paper.txt'
+	sources = read_text(sourcesfile)
+	sources = reform(sources[0,*])
+	nights = sourcenights(sources)
+	for i=0, n_elements(nights)-1 do begin
+		amcorrection, nights[i], cf_err_am=cf_err_am, cf_err_noam=cf_err_noam
+		one = {night:nights[i], cf_err_am:cf_err_am, cf_err_noam:cf_err_noam}
+		if n_elements(cf_err) eq 0 then cf_err=one else cf_err=[cf_err,one]
+	endfor
 end

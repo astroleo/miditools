@@ -113,6 +113,14 @@ pro lpw, night, time, calonly=calonly, skipexcal=skipexcal, skipexsci=skipexsci
 	;;
 	midivispipe, caltag, calfiles, mask=mask, smooth=sm, gsmooth=gsm, /two, ave=ave, minopd=minopd, ierr=ierr
 	print, ierr
+	if ierr ne 0 then lprint, 'lpw: ierr = ' + ierr
+	if ierr eq 12 then begin
+		corruptcorrfile = caltag + '.corr.fits'
+		spawn, 'rm ' + corruptcorrfile
+		lprint, 'lpw: Removed corrupt corr file ' + corruptcorrfile
+	endif
+	if ierr eq 0 and keyword_set(forcecalmask) then makefringeimage, night, time_sci
+
 	
 
 

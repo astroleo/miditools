@@ -15,6 +15,10 @@
 2008-04-20 $ 02:41:31 $ IC4329A     $ strange spectrum
 2008-04-20 $ 06:55:20 $ IC4329A     $ strange spectrum
 2009-03-12 $ 03:20:32 $ NGC3783     $ no signal
+#2009-03-12 $ 03:32:16 $ NGC3783     $ probably NOT bad, but cannot be calibrated because only nearby calibrator is unknown to EWS
+#2009-03-12 $ 04:23:34 $ NGC3783     $ probably NOT bad, but cannot be calibrated because only nearby calibrator is unknown to EWS
+#2009-03-14 $ 04:18:25 $ NGC3783     $ NOT bad, but cannot be calibrated because only nearby calibrator is unknown to EWS
+#2009-03-14 $ 04:28:20 $ NGC3783     $ NOT bad, but cannot be calibrated because only nearby calibrator is unknown to EWS
 2009-05-11 $ 23:33:00 $ NGC3783     $ very few counts (at decision threshold) in A longwards of 11 micron
 2009-12-02 $ 03:10:08 $ NGC1365     $ very shallow ozone feature in counts, strong ozone "emission" feature in flux, flux much too high
 2009-12-02 $ 06:09:30 $ NGC1365     $ ozone feature in emission in calibrated photometry; probably calibrator problem
