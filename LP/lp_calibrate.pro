@@ -134,7 +134,7 @@ pro lp_calibrate, night, time, tag_sci, source=source, nogain=nogain
 	gainstat = gainselect(night, time)
 	if gainstat.avg[0] eq -1 then source = {night:'-1'} else begin
 		gain_rms_rel = gainstat.rms/gainstat.avg
-			
+		
 		if not keyword_set(nogain) then calcorr_rms = sqrt(calcorrerr^2 + calcorr^2 * gain_rms_rel^2) $
 			else begin
 				calcorr_rms = calcorrerr
