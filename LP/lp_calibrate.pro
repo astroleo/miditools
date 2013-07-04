@@ -6,15 +6,30 @@
 ;; the statistical error measured within one observation (given by EWS) and the 
 ;; uncertainity in the calibration (gain variation)
 ;;
-function lpavgflx, calcorr, calcorrerr, gain_rms_rel, lam, dlam
-	c0 = l2c(lam+dlam)
-	c1 = l2c(lam)
-	c2 = l2c(lam-dlam)
+function lpavgflx, calcorr, calcorrerr, gain_rms_rel, lam, dlam, grism=grism
+	if keyword_set(grism) then begin
+		c0 = l2c(lam-dlam, grism=grism)
+		c1 = l2c(lam, grism=grism)
+		c2 = l2c(lam+dlam, grism=grism)
+	endif else begin
+		c0 = l2c(lam+dlam, grism=grism)
+		c1 = l2c(lam, grism=grism)
+		c2 = l2c(lam-dlam, grism=grism)
+	endelse	
+	;;
+	;; for the moment simply interpolate gain_rms_rel to grism resolution
+	if keyword_set(grism) then begin
+		restore, '$MIDITOOLS/MIDI/w_grism.sav'
+		w_grism=w
+		restore, '$MIDITOOLS/MIDI/w.sav'
+		w_prism=w
+		gain_rms_rel_ip=interpol(gain_rms_rel, w_prism, w_grism)
+	endif else gain_rms_rel_ip=gain_rms_rel
 	
 	N = float(c2-c0+1)
 	avgflx = total(calcorr[c0:c2]) / N
 	avgerr = total(calcorrerr[c0:c2]) / N
-	avggain_rms_rel = total(gain_rms_rel[c0:c2]) / N
+	avggain_rms_rel = total(gain_rms_rel_ip[c0:c2]) / N
 	
 	;;
 	;; determine factor of decorrelation correction
@@ -33,10 +48,16 @@ function lpavgflx, calcorr, calcorrerr, gain_rms_rel, lam, dlam
 	return, {avg:avgflx, avg_rms:avgflx_err}
 end
 
-function lpavgphase, calphi, calphierr, lam, dlam
-	c0 = l2c(lam+dlam)
-	c1 = l2c(lam)
-	c2 = l2c(lam-dlam)
+function lpavgphase, calphi, calphierr, lam, dlam, grism=grism
+	if keyword_set(grism) then begin
+		c0 = l2c(lam-dlam, grism=grism)
+		c1 = l2c(lam, grism=grism)
+		c2 = l2c(lam+dlam, grism=grism)
+	endif else begin
+		c0 = l2c(lam+dlam, grism=grism)
+		c1 = l2c(lam, grism=grism)
+		c2 = l2c(lam-dlam, grism=grism)
+	endelse	
 	
 	N = float(c2-c0+1)
 	avgphase = float(total(calphi[c0:c2]) / N)
@@ -128,6 +149,9 @@ pro lp_calibrate, night, time, tag_sci, source=source, nogain=nogain
 	calphi = c.visphi
 	calphierr = c.visphierr
 	restore, '$MIDITOOLS/local/obs/obs_db.sav'
+	ix = where(db.day eq night and db.time eq time)
+	if db[ix].grism eq 'GRISM' then grism=1 else grism=0
+
 	gainfile = '$MIDITOOLS/local/obs/gains.sav'
 	restore, gainfile
 	; get statistics of gains applicable for this observation
@@ -151,7 +175,7 @@ pro lp_calibrate, night, time, tag_sci, source=source, nogain=nogain
 		phi = fltarr(n_elements(lam))
 		phi_err = fltarr(n_elements(lam))
 		for i=0, n_elements(lam)-1 do begin
-			a = lpavgflx(calcorr,calcorrerr,gain_rms_rel,lam[i],dlam[i])
+			a = lpavgflx(calcorr,calcorrerr,gain_rms_rel,lam[i],dlam[i], grism=grism)
 			flx[i] = a.avg
 			;;
 			;; since we expect systematic errors to be >= 5%, we require the relative error of the average to be >= 5%
@@ -160,7 +184,7 @@ pro lp_calibrate, night, time, tag_sci, source=source, nogain=nogain
 				print, 'formal relative uncertainty of averaged flux < 0.05, setting it to 0.05'
 			endif else err[i] = a.avg_rms
 			
-			p = lpavgphase(calphi,calphierr,lam[i],dlam[i])
+			p = lpavgphase(calphi,calphierr,lam[i],dlam[i], grism=grism)
 			phi[i] = p.avg
 			phi_err[i] = p.avg_rms
 		endfor
@@ -177,7 +201,6 @@ pro lp_calibrate, night, time, tag_sci, source=source, nogain=nogain
 			calphierr = interpol(calphierr,w_grism,w)
 		endif
 		
-		ix = where(db.day eq night and db.time eq time)
 		source = {night:night, time:db[ix].time, id:db[ix].id, corramp:calcorr, corramperr:calcorr_rms, calphi:calphi, calphierr:calphierr, gain_avg:gainstat.avg, gain_rms:gainstat.rms, avg:avg, bl:db[ix].bl, pa:db[ix].pa, ucoord:c.ucoord, vcoord:c.vcoord, telescope:db[ix].telescope}
 	endelse
 end

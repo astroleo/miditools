@@ -31,9 +31,9 @@
 ##             12: this work
 ##
 ##                                                                <-- from NED -->
-## id           RA             DEC         NED type  SIMBAD type   dist     dist    dist       notes                            name            Coude guide star   dist [arcsec]  Vmag    redshift    lum. distance    references    V(VV)
+## id           RA             DEC         VeronTyp  SIMBAD type   dist     dist    dist       notes                            name            Coude guide star   dist [arcsec]  Vmag    redshift    lum. distance    references    V(VV)
 ##                                                                 mean     stddev  type
-IZwicky1     /  00 53 35.1  /  +12 41 34  / Sy 1    / Sy 1    /    222    /         / z  /                                    / I Zw 1       /    nucleus                / 0    / 14.1 /    0.0589   /   248 /     12              / 14.03
+IZwicky1     /  00 53 35.1  /  +12 41 34  / NL Sy 1  / Sy 1    /    222    /         / z  /                                    / I Zw 1       /    nucleus                / 0    / 14.1 /    0.0589   /   248 /     12              / 14.03
 NGC424       /  01 11 27.6  /  -38 05 00  / Sy 1h   / Sy 2    /    44.7   /         / z  /                                    / NGC 424      /    nucleus                / 0    / 12.0 /   0.011018  /   45.7  /   11              / 14.12
 NGC1068      /  02 42 40.7  /  -00 00 48  / Sy 1h   / Sy 2    /    14.4   /         / i  /   M77                              / NGC 1068     /    nucleus                / 0    / 12.0 /    0.003793 /    -1 /     0,5,12          / 10.83
 NGC1365      /  03 33 36.4  /  -36 08 25  / Sy 1.8  / Sy 1    /    18.1   /  2.6    / i  /   optical classification variable  / NGC 1365     /    nucleus                / 0    / 13.5 /    0.005457 /    -1 /     6,12            / 12.95
@@ -51,10 +51,10 @@ NGC4507      /  12 35 36.6  /  -39 54 33  / Sy 1h   / Sy 2    /    51.7   /     
 NGC4593      /  12 39 39.4  /  -05 20 39  / Sy 1.0  / Sy 1    /    41.2   /         / z  /                                    / NGC 4593     /    nucleus                / 0    / 13.9 /    0.009000 /    42.0 /   12              / 13.15
 IC3639       /  12 40 52.8  /  -36 45 21  / Sy 1h   / Sy 2    /    48.3   /         / z  /   no successful track - only limit / IC 3639      /    2MASS 12405050-3645458 / 37   / 14.0 / 0.010924    /  49.5   /   12              / 13.50
 ESO323-77    /  13 06 26.1  /  -40 24 52  / Sy 1.2  / Sy 1    /    64.2   /         / z  /                                    / ESO 323-77   /    nucleus                / 0    / 12.5  / 0.015014    /  66.3   /  10              / 13.42
-NGC5128      /  13 25 26.6  /  -43 01 09  / Sy 2    / Sy 2    /    3.8    /  0.08   / i  /                                    / Centaurus A  /    2MASS 13252384-4300537 / 45   / 12.5   / 0.001825     /  -1   /  1,8             / 12.76
+NGC5128      /  13 25 26.6  /  -43 01 09  / ?       / Sy 2    /    3.8    /  0.08   / i  /                                    / Centaurus A  /    2MASS 13252384-4300537 / 45   / 12.5   / 0.001825     /  -1   /  1,8             / 12.76
 IRAS13349+2438 / 13 37 18.7  /  +24 23 03 / NL Sy 1 / Sy 1    /    393    /         / z  /                                    / IRAS 13349+2438 / nucleus                / 0    / 14.5   / 0.107641    /  483   /  10              / 15.00
 IC4329A      /  13 49 19.3  /  -30 18 34  / Sy 1.2  / Sy 1    /    68.3   /         / z  /                                    / IC 4329 A    /    nucleus                / 0    / 12.9 /    0.016054   /    70.6 / 6,9,12          / 13.66
 Circinus     /  14 13 09.9  /  -65 20 21  / Sy 1h   / Sy 2    /    4.205  /  0.007  / i  /                                    / Circinus     /    2MASS 14131786-6520182 / 50   / 12.5 /    0.001448   /    -1 /   2               / 12.10
 NGC5506      /  14 13 15.0  /  -03 12 27  / Sy 1i   / Sy 2    /    28.7   /         / z  /                                    / NGC 5506     /    nucleus                / 0    / 12.4 /    0.006181   /    29.1 / 6,12            / 14.38
 NGC5995      /  15 48 25.0  /  -13 45 28  / Sy 1.9  / Sy 2    /    102    /         / z  /                                    / NGC 5995     /    nucleus                / 0    / 12.4 /    0.025194   /    108 /  12              / 13.69
-NGC7469      /  23 03 15.6  /  +08 52 26  / Sy 1    / Sy 1    /    60.9   /         / z  /                                    / NGC 7469     /    nucleus                / 0    / 13.3 /    0.016317   /    62.7 / 6,12            / 13.04
+NGC7469      /  23 03 15.6  /  +08 52 26  / Sy 1.5  / Sy 1    /    60.9   /         / z  /                                    / NGC 7469     /    nucleus                / 0    / 13.3 /    0.016317   /    62.7 / 6,12            / 13.04
